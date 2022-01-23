@@ -72,7 +72,7 @@ const macOS = {
 }
 
 module.exports = {
-  productName: 'showcode-app',
+  productName: 'Showcode',
   appId: 'com.showcode.app',
   artifactName: 'setup-${version}.${ext}',
   publish: isRelease ? ['github'] : null, //  Publish artifacts to Github (release)
@@ -95,6 +95,11 @@ module.exports = {
     {
       from: 'src/extraResources/',
       to: ''
+    },
+    {
+      from: "./node_modules/@unlocksh/electron-license/license",
+      to: "license",
+      filter: "**/*"
     }
   ],
   ...windowsOS,

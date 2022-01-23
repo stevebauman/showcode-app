@@ -17,6 +17,7 @@ const Unlock = new (require('@unlocksh/electron-license'))(
       },
       prompt: {
         title: 'Showcode',
+        logo:"https://github.com/stevebauman/showcode-app/blob/master/icon.svg",
       }
   }
 );
