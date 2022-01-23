@@ -9,9 +9,8 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
 
-if (process.platform === 'darwin') {
-  app.dock.setIcon(path.join(__dirname, 'icon.png'));
-}
+// if (process.platform === 'darwin') {
+//   app.dock.setIcon(path.join(__dirname, '/../extraResources/icons/icon.png'));
+// }
 
-// Load here all startup windows
 require('./mainWindow')

@@ -1,9 +1,25 @@
 /* eslint-disable */
 import { EventEmitter } from 'events'
-import { BrowserWindow, app } from 'electron'
+import { BrowserWindow, autoUpdater, app } from 'electron'
 const DEV_SERVER_URL = process.env.DEV_SERVER_URL
 const isProduction = process.env.NODE_ENV === 'production'
 const isDev = process.env.NODE_ENV === 'development'
+
+const Unlock = new (require('@unlocksh/electron-license'))(
+  {
+    api: {
+          key: 'TG6bZak5SKKMix62JGUuJfhkuqcEHAqd',
+          productId: '03a84e20-7d70-4f59-88bb-3c5bea5c6d13',
+      },
+      license: {
+          requireEmail: true,
+          encryptionKey: 'jN6okKotbfz0wErG7e0ShczvtJXivTaB',
+      },
+      prompt: {
+        title: 'Showcode',
+      }
+  }
+);
 
 export default class BrowserWinHandler {
   /**
@@ -95,9 +111,8 @@ export default class BrowserWinHandler {
     const serverUrl = isDev ? DEV_SERVER_URL : 'app://./index.html'
     const fullPath = serverUrl + '#' + pagePath
     await this.browserWindow.loadURL(fullPath)
-
-    // After loading the web app, show the desktop app
-    this.browserWindow.show()
+    
+    Unlock.ifAuthorized(this.browserWindow)
   }
 
   /**

@@ -7,7 +7,7 @@ const winHandler = new BrowserWinHandler({
   width: 1280,
   show: false,
   useContentSize: true,
-  icon: path.join(__dirname, 'icon.png')
+  //icon: path.join(__dirname, '/../resources/icons/icon.png')
 })
 
 winHandler.onCreated(async (browserWindow) => {
