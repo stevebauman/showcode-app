@@ -17,7 +17,7 @@ const Unlock = new (require('@unlocksh/electron-license'))(
       },
       prompt: {
         title: 'Showcode',
-        logo:"https://raw.githubusercontent.com/stevebauman/showcode-app/master/logo.svg?token=GHSAT0AAAAAABL2647VS3HBB2N4E4PIA6MUYPNXSKA",
+        logo:"http://showcode.app/app-icon.svg",
       }
   }
 );
@@ -44,14 +44,6 @@ export default class BrowserWinHandler {
     } else {
       app.once('ready', () => {
         this._create()
-      })
-
-      // This bypasses shiki's fetch "app" issue.
-      app.whenReady().then(() => {
-        protocol.registerFileProtocol('app', (request, callback) => {
-          const pathname = request.url.replace('app:///', '')
-          callback(pathname);
-        })
       })
     }
 
