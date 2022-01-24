@@ -1,7 +1,9 @@
 require('dotenv').config();
+
 const fs = require('fs');
 const path = require('path');
-var electron_notarize = require('electron-notarize');
+
+const { notarize } = require('electron-notarize');
 
 module.exports = async function (params) {
     if (process.platform !== 'darwin') {
@@ -10,18 +12,19 @@ module.exports = async function (params) {
 
     console.log('afterSign hook triggered', params);
 
-    let appId = 'com.showcode.app'
+    const appId = 'com.showcode.app';
+    const appPath = path.join(params.appOutDir, `${params.packager.appInfo.productFilename}.app`);
 
-    let appPath = path.join(params.appOutDir, `${params.packager.appInfo.productFilename}.app`);
     if (!fs.existsSync(appPath)) {
-        console.log('skip');
+        console.log('skipping notarization - already exists');
+
         return;
     }
 
     console.log(`Notarizing ${appId} found at ${appPath}`);
 
     try {
-        await electron_notarize.notarize({
+        await notarize({
             appBundleId: appId,
             appPath: appPath,
             appleId: process.env.APPLE_ID,
