@@ -19,7 +19,8 @@ const Unlock = new (require('@unlocksh/electron-license'))(
         title: 'Showcode',
         logo:"http://showcode.app/app-icon.svg",
       }
-  }
+  },
+  isProduction ? autoUpdater : null
 );
 
 export default class BrowserWinHandler {

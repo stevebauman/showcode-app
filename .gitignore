@@ -3,4 +3,5 @@
 dist
 build/*
 !build/icons
+!build/entitlements.mac.plist
 node_modules

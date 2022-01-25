@@ -17,10 +17,12 @@ module.exports = function (params) {
 
     if (!macBuild) {
         console.log('No MacOS build is present in platform targets.');
+        
         return;
     }
 
     console.log('Mac OS build found, creating new archive.');
+
     execSync(
         `ditto -c -k --sequesterRsrc --keepParent --zlibCompressionLevel 9 "${params.outDir}/mac/${macBuild.appInfo.productFilename}.app" "${params.outDir}/${macBuild.appInfo.productFilename}-${macBuild.appInfo.buildVersion}-mac.zip"`
     );
@@ -33,17 +35,21 @@ module.exports = function (params) {
         let output = execSync(
             `${appBuilderPath} blockmap --input="${APP_GENERATED_BINARY_PATH}" --output="${params.outDir}/${macBuild.appInfo.productFilename}-${macBuild.appInfo.buildVersion}-mac.zip.blockmap" --compression=gzip`
         );
+
         let {sha512, size} = JSON.parse(output);
 
         const ymlPath = path.join(params.outDir, 'latest-mac.yml');
+
         let ymlData = yaml.safeLoad(fs.readFileSync(ymlPath, 'utf8'));
 
         ymlData.sha512 = sha512;
         ymlData.files[0].sha512 = sha512;
         ymlData.files[0].size = size;
+
         let yamlStr = yaml.safeDump(ymlData);
 
         fs.writeFileSync(ymlPath, yamlStr, 'utf8');
+
         console.log('Successfully updated YAML file and configurations with blockmap.');
     } catch (e) {
         console.log('Error in updating YAML file and configurations with blockmap.', e);
