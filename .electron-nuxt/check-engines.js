@@ -23,7 +23,7 @@ function checkNodeVersion(){
   }
 }
 
-//https://github.com/yarnpkg/yarn/issues/5063
+// https://github.com/yarnpkg/yarn/issues/5063
 function disallowNpm() {
   const execPath = process.env.npm_execpath;
   if(!execPath.includes('yarn')){
@@ -38,7 +38,7 @@ function disallowNpm() {
 }
 
 
-//https://stackoverflow.com/questions/6832596/how-to-compare-software-version-number-using-js-only-number
+// https://stackoverflow.com/questions/6832596/how-to-compare-software-version-number-using-js-only-number
 // Return 1 if a > b
 // Return -1 if a < b
 // Return 0 if a == b
