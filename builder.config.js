@@ -64,6 +64,7 @@ const macOS = {
     entitlementsInherit: 'build/entitlements.mac.plist', // Required for MacOS Catalina
   },
   afterSign: isRelease ? 'scripts/notarize.js' : null, // Notarize Mac (ONLY for deploys)
+  afterAllArtifactBuild: isRelease ? 'scripts/fixMacDistributionArchive.js' : null,
   dmg: {
     sign: false, // Required for MacOS Catalina
     contents: [

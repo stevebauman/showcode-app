@@ -29,6 +29,7 @@
     "electron-devtools-installer": "^3.2.0",
     "electron-icon-maker": "^0.0.5",
     "electron-notarize": "^1.1.1",
+    "electron-updater": "^4.6.1",
     "nuxt": "^2.15.8",
     "path": "^0.12.7",
     "showcode": "file:src/renderer",

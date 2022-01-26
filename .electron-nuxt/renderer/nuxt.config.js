@@ -10,6 +10,9 @@ const resourcesPath = require('../resources-path-provider')
 const { RENDERER_PROCESS_DIR, DIST_DIR, DISABLE_BABEL_LOADER } = require('../config')
 const userNuxtConfig = require('../../src/renderer/nuxt.config')
 
+// Enable desktop features.
+userNuxtConfig.publicRuntimeConfig.isDesktop = true;
+
 const baseConfig = {
   srcDir: RENDERER_PROCESS_DIR,
   rootDir: RENDERER_PROCESS_DIR,

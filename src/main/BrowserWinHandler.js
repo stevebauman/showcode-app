@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { EventEmitter } from 'events'
-import { BrowserWindow, autoUpdater, app } from 'electron'
+import { BrowserWindow, app } from 'electron'
+import { autoUpdater } from "electron-updater"
 const DEV_SERVER_URL = process.env.DEV_SERVER_URL
 const isProduction = process.env.NODE_ENV === 'production'
 const isDev = process.env.NODE_ENV === 'development'

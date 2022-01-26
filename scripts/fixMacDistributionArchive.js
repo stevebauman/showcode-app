@@ -40,7 +40,7 @@ module.exports = function (params) {
 
         const ymlPath = path.join(params.outDir, 'latest-mac.yml');
 
-        let ymlData = yaml.safeLoad(fs.readFileSync(ymlPath, 'utf8'));
+        let ymlData = yaml.load(fs.readFileSync(ymlPath, 'utf8'));
 
         ymlData.sha512 = sha512;
         ymlData.files[0].sha512 = sha512;
