@@ -49,8 +49,23 @@ jobs:
           API_KEY_ID: ${{ secrets.api_key_id }}
           API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
 
-      - name: Upload Builds
+      - name: Upload MacOS Build
+        if: startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-build
-          path: build/setup-*
+          path: build/Showcode-*.zip
+
+      - name: Upload Windows Build
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}-build
+          path: build/Showcode-*.exe
+
+      - name: Upload Linux Build
+        if: startsWith(matrix.os, 'linux')
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}-build
+          path: build/Showcode-*.AppImage

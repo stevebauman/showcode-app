@@ -44,7 +44,7 @@ const windowsOS = {
 const linuxOS = {
   linux: {
     icon: ICONS_DIR,
-    target: 'deb'
+    target: 'AppImage'
   }
 }
 
@@ -86,7 +86,7 @@ const macOS = {
 module.exports = {
   productName: 'Showcode',
   appId: 'com.showcode.app',
-  artifactName: 'setup-${version}.${ext}',
+  artifactName: 'Showcode-${version}-${os}-${arch}.${ext}',
   publish: isRelease ? ['github'] : null, //  Publish artifacts to Github (release)
   directories: {
     output: 'build'
