@@ -22,5 +22,11 @@ jobs:
       - name: Clone Showcode
         run: git clone https://github.com/stevebauman/showcode.git ./src/renderer
 
-      - name: Build
+      - name: Build Application
         run: yarn && yarn build
+
+      - name: Upload Builds
+        uses: actions/upload-artifact@v2
+        with:
+          name: Builds
+          path: build
