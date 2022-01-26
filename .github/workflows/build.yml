@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: 14
 
+      - name: Clone Showcode
+        run: git clone https://github.com/stevebauman/showcode.git ./src/renderer
+
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         with:
