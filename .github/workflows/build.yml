@@ -64,7 +64,7 @@ jobs:
           path: build/Showcode-*.exe
 
       - name: Upload Linux Build
-        if: startsWith(matrix.os, 'linux')
+        if: startsWith(matrix.os, 'ubuntu')
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-build
