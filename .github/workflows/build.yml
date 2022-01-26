@@ -38,6 +38,7 @@ jobs:
         env:
           # macOS notarization API key
           RELEASE: true
+          GH_TOKEN: ${{ secrets.github_token }}
           APPLE_ID: ${{ secrets.apple_id }}
           APPLE_ID_PASSWORD: ${{ secrets.apple_id_password }}
           API_KEY_ID: ${{ secrets.api_key_id }}
