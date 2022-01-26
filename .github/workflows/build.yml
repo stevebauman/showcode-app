@@ -22,11 +22,14 @@ jobs:
       - name: Clone Showcode
         run: git clone https://github.com/stevebauman/showcode.git ./src/renderer
 
+      - name: Install Dependencies
+        run: yarn
+
       - name: Build Application
-        run: yarn && yarn build
+        run: yarn build
 
       - name: Upload Builds
         uses: actions/upload-artifact@v2
         with:
-          name: Builds
+          name: ${{ matrix.os }}-build
           path: build
