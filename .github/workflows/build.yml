@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-build
-          path: build/Showcode-*.zip
+          path: build/Showcode-*
 
       - name: Upload Windows Build
         if: startsWith(matrix.os, 'windows')
