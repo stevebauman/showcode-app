@@ -1,25 +1,26 @@
 /* eslint-disable */
-import { EventEmitter } from 'events'
-import { BrowserWindow, app } from 'electron'
-import { autoUpdater } from "electron-updater"
-const DEV_SERVER_URL = process.env.DEV_SERVER_URL
-const isProduction = process.env.NODE_ENV === 'production'
-const isDev = process.env.NODE_ENV === 'development'
+import { EventEmitter } from "events";
+import { BrowserWindow, app } from "electron";
+import { autoUpdater } from "electron-updater";
+import windowStateKeeper from "electron-window-state";
+const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
+const isProduction = process.env.NODE_ENV === "production";
+const isDev = process.env.NODE_ENV === "development";
 
-const Unlock = new (require('@unlocksh/electron-license'))(
+const Unlock = new (require("@unlocksh/electron-license"))(
   {
     api: {
-          key: 'TG6bZak5SKKMix62JGUuJfhkuqcEHAqd',
-          productId: '03a84e20-7d70-4f59-88bb-3c5bea5c6d13',
-      },
-      license: {
-          requireEmail: true,
-          encryptionKey: 'jN6okKotbfz0wErG7e0ShczvtJXivTaB',
-      },
-      prompt: {
-        title: 'Showcode',
-        logo:"http://showcode.app/app-icon.svg",
-      }
+      key: "TG6bZak5SKKMix62JGUuJfhkuqcEHAqd",
+      productId: "03a84e20-7d70-4f59-88bb-3c5bea5c6d13",
+    },
+    license: {
+      requireEmail: true,
+      encryptionKey: "jN6okKotbfz0wErG7e0ShczvtJXivTaB",
+    },
+    prompt: {
+      title: "Showcode",
+      logo: "http://showcode.app/app-icon.svg",
+    },
   },
   isProduction ? autoUpdater : null
 );
@@ -30,11 +31,11 @@ export default class BrowserWinHandler {
    * @param [allowRecreate] {boolean}
    */
   constructor(options, allowRecreate = true) {
-    this._eventEmitter = new EventEmitter()
-    this.allowRecreate = allowRecreate
-    this.options = options
-    this.browserWindow = null
-    this._createInstance()
+    this._eventEmitter = new EventEmitter();
+    this.allowRecreate = allowRecreate;
+    this.options = options;
+    this.browserWindow = null;
+    this._createInstance();
   }
 
   _createInstance() {
@@ -42,36 +43,52 @@ export default class BrowserWinHandler {
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     if (app.isReady()) {
-      this._create()
+      this._create();
     } else {
-      app.once('ready', () => {
-        this._create()
-      })
+      app.once("ready", () => {
+        this._create();
+      });
     }
 
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (!this.allowRecreate) return
-    app.on('activate', () => {
-      this._recreate()
-    })
+    if (!this.allowRecreate) {
+      return;
+    }
+
+    app.on("activate", () => {
+      this._recreate();
+    });
   }
 
   _create() {
+    const mainWindowState = windowStateKeeper({
+      defaultWidth: 1280,
+      defaultHeight: 720,
+    });
+
     this.browserWindow = new BrowserWindow({
       ...this.options,
+      x: mainWindowState.x,
+      y: mainWindowState.y,
+      width: mainWindowState.width,
+      height: mainWindowState.height,
       webPreferences: {
         ...this.options.webPreferences,
         webSecurity: isProduction, // disable on dev to allow loading local resources
         nodeIntegration: true, // allow loading modules via the require () function
         contextIsolation: false, // https://github.com/electron/electron/issues/18037#issuecomment-806320028
       },
-    })
-    this.browserWindow.on('closed', () => {
+    });
+
+    mainWindowState.manage(this.browserWindow);
+
+    this.browserWindow.on("closed", () => {
       // Dereference the window object
-      this.browserWindow = null
-    })
-    this._eventEmitter.emit('created')
+      this.browserWindow = null;
+    });
+
+    this._eventEmitter.emit("created");
   }
 
   _recreate() {
@@ -90,24 +107,24 @@ export default class BrowserWinHandler {
    * @param callback {onReadyCallback}
    */
   onCreated(callback) {
-    if (this.browserWindow !== null) return callback(this.browserWindow)
-    this._eventEmitter.on('created', () => {
-      callback(this.browserWindow)
-    })
+    if (this.browserWindow !== null) return callback(this.browserWindow);
+    this._eventEmitter.on("created", () => {
+      callback(this.browserWindow);
+    });
   }
 
   async loadPage(pagePath) {
     if (!this.browserWindow) {
       return Promise.reject(
         new Error("The page could not be loaded before win 'created' event")
-      )
+      );
     }
 
-    const serverUrl = isDev ? DEV_SERVER_URL : 'app://./index.html'
-    const fullPath = serverUrl + '#' + pagePath
-    await this.browserWindow.loadURL(fullPath)
-    
-    Unlock.ifAuthorized(this.browserWindow)
+    const serverUrl = isDev ? DEV_SERVER_URL : "app://./index.html";
+    const fullPath = serverUrl + "#" + pagePath;
+    await this.browserWindow.loadURL(fullPath);
+
+    Unlock.ifAuthorized(this.browserWindow);
   }
 
   /**
@@ -116,7 +133,7 @@ export default class BrowserWinHandler {
    */
   created() {
     return new Promise((resolve) => {
-      this.onCreated(() => resolve(this.browserWindow))
-    })
+      this.onCreated(() => resolve(this.browserWindow));
+    });
   }
 }

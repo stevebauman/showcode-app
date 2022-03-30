@@ -30,6 +30,7 @@
     "electron-icon-maker": "^0.0.5",
     "electron-notarize": "^1.1.1",
     "electron-updater": "^4.6.1",
+    "electron-window-state": "^5.0.3",
     "nuxt": "^2.15.8",
     "path": "^0.12.7",
     "showcode": "file:src/renderer",
