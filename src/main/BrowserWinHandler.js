@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { EventEmitter } from "events";
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 import { autoUpdater } from "electron-updater";
 import windowStateKeeper from "electron-window-state";
 const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
@@ -73,15 +73,46 @@ export default class BrowserWinHandler {
       y: mainWindowState.y,
       width: mainWindowState.width,
       height: mainWindowState.height,
+      // This fixes subpixel aliasing on Windows
+      // See https://github.com/atom/atom/commit/683bef5b9d133cb194b476938c77cc07fd05b972
+      backgroundColor: "#fff",
       webPreferences: {
         ...this.options.webPreferences,
-        webSecurity: isProduction, // disable on dev to allow loading local resources
-        nodeIntegration: true, // allow loading modules via the require () function
+        disableBlinkFeatures: "Auxclick", // Disable auxclick event. See: https://developers.google.com/web/updates/2016/10/auxclick
+        webSecurity: isProduction, // Disable on dev to allow loading local resources
+        nodeIntegration: true, // Allow loading modules via the require () function
         contextIsolation: false, // https://github.com/electron/electron/issues/18037#issuecomment-806320028
       },
     });
 
     mainWindowState.manage(this.browserWindow);
+
+    let quitting = false;
+
+    this.browserWindow.on("before-quit", () => (quitting = true));
+
+    ipcMain.on("will-quit", (event) => {
+      quitting = true;
+      event.returnValue = true;
+    });
+
+    this.browserWindow.on("close", (e) => {
+      // On macOS, when the user closes the window we really
+      // just hide it. This lets us activate quickly and
+      // keep all our interesting logic in the renderer.
+      if (process.platform === "darwin" && !quitting) {
+        e.preventDefault();
+
+        if (this.browserWindow.isFullScreen()) {
+          this.browserWindow.setFullScreen(false);
+          this.browserWindow.once("leave-full-screen", () => app.hide());
+        } else {
+          app.hide();
+        }
+
+        return;
+      }
+    });
 
     this.browserWindow.on("closed", () => {
       // Dereference the window object
