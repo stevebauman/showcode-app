@@ -88,8 +88,9 @@ export default class BrowserWinHandler {
     mainWindowState.manage(this.browserWindow);
 
     let quitting = false;
-
-    this.browserWindow.on("before-quit", () => (quitting = true));
+    app.on("before-quit", () => {
+      quitting = true;
+    });
 
     ipcMain.on("will-quit", (event) => {
       quitting = true;
