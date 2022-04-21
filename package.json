@@ -1,6 +1,6 @@
 {
   "name": "showcode-app",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Create beautiful code screenshots.",
   "keywords": [],
   "homepage": "https://github.com/michalzaq12/electron-nuxt/blob/master/README.md",
@@ -11,7 +11,7 @@
     "dev": "node .electron-nuxt/dev.js",
     "build": "node .electron-nuxt/build.js",
     "preinstall": "node .electron-nuxt/check-engines.js",
-    "postinstall": "electron-builder install-app-deps "
+    "postinstall": "electron-builder install-app-deps"
   },
   "resolutions": {
     "@types/node": "14.14.9"

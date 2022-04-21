@@ -87,7 +87,9 @@ export default class BrowserWinHandler {
 
     mainWindowState.manage(this.browserWindow);
 
+    let maximized = this.browserWindow.isMaximized();
     let quitting = false;
+
     app.on("before-quit", () => {
       quitting = true;
     });
@@ -95,6 +97,16 @@ export default class BrowserWinHandler {
     ipcMain.on("will-quit", (event) => {
       quitting = true;
       event.returnValue = true;
+    });
+
+    ipcMain.on("double-click-title-bar", () => {
+      if (maximized) {
+        this.browserWindow.unmaximize();
+      } else {
+        this.browserWindow.maximize();
+      }
+
+      maximized = this.browserWindow.isMaximized();
     });
 
     this.browserWindow.on("close", (e) => {
