@@ -35,18 +35,19 @@ export default class BrowserWinHandler {
     this.allowRecreate = allowRecreate;
     this.options = options;
     this.browserWindow = null;
-    this._createInstance();
+
+    this.createInstance();
   }
 
-  _createInstance() {
+  createInstance() {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     if (app.isReady()) {
-      this._create();
+      this.create();
     } else {
       app.once("ready", () => {
-        this._create();
+        this.create();
       });
     }
 
@@ -57,11 +58,11 @@ export default class BrowserWinHandler {
     }
 
     app.on("activate", () => {
-      this._recreate();
+      this.recreate();
     });
   }
 
-  _create() {
+  create() {
     const mainWindowState = windowStateKeeper({
       defaultWidth: 1280,
       defaultHeight: 720,
@@ -135,9 +136,9 @@ export default class BrowserWinHandler {
     this._eventEmitter.emit("created");
   }
 
-  _recreate() {
+  recreate() {
     if (this.browserWindow === null) {
-      this._create();
+      this.create();
     }
   }
 
@@ -147,11 +148,13 @@ export default class BrowserWinHandler {
    */
 
   /**
-   *
    * @param callback {onReadyCallback}
    */
   onCreated(callback) {
-    if (this.browserWindow !== null) return callback(this.browserWindow);
+    if (this.browserWindow !== null) {
+      return callback(this.browserWindow);
+    }
+
     this._eventEmitter.on("created", () => {
       callback(this.browserWindow);
     });
@@ -172,7 +175,6 @@ export default class BrowserWinHandler {
   }
 
   /**
-   *
    * @returns {Promise<BrowserWindow>}
    */
   created() {
