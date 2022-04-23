@@ -7,7 +7,7 @@ const options = { show: false };
 if (__DARWIN__) {
   options.titleBarStyle = "hidden";
 } else if (__WINDOWS__) {
-  options.frame = "hidden";
+  options.frame = false;
 }
 
 const winHandler = new BrowserWinHandler(options);
