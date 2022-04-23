@@ -3,6 +3,7 @@ import { EventEmitter } from "events";
 import { BrowserWindow, app, ipcMain } from "electron";
 import { autoUpdater } from "electron-updater";
 import windowStateKeeper from "electron-window-state";
+import WindowStateHandler from "./WindowStateHandler";
 const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
 const isProduction = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
@@ -88,7 +89,6 @@ export default class BrowserWinHandler {
 
     mainWindowState.manage(this.browserWindow);
 
-    let maximized = this.browserWindow.isMaximized();
     let quitting = false;
 
     app.on("before-quit", () => {
@@ -100,14 +100,19 @@ export default class BrowserWinHandler {
       event.returnValue = true;
     });
 
-    ipcMain.on("double-click-title-bar", () => {
-      if (maximized) {
-        this.browserWindow.unmaximize();
-      } else {
-        this.browserWindow.maximize();
-      }
+    ipcMain.on("close", () => this.browserWindow.close());
+    ipcMain.on("maximize", () => this.browserWindow.maximize());
+    ipcMain.on("unmaximize", () => this.browserWindow.unmaximize());
+    ipcMain.on("minimize", () => this.browserWindow.minimize());
 
-      maximized = this.browserWindow.isMaximized();
+    ipcMain.on("double-click-title-bar", () => {
+      this.browserWindow.isMaximized()
+        ? this.browserWindow.unmaximize()
+        : this.browserWindow.maximize();
+    });
+
+    ipcMain.handle("get-window-state", async () => {
+      return new WindowStateHandler(this.browserWindow).get();
     });
 
     this.browserWindow.on("close", (e) => {
