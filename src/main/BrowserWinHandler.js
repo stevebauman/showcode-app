@@ -1,9 +1,11 @@
 /* eslint-disable */
+import { __DARWIN__ } from ".";
 import { EventEmitter } from "events";
-import { BrowserWindow, app, ipcMain } from "electron";
 import { autoUpdater } from "electron-updater";
+import { BrowserWindow, app, ipcMain } from "electron";
 import windowStateKeeper from "electron-window-state";
 import WindowStateHandler from "./WindowStateHandler";
+
 const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
 const isProduction = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
@@ -119,7 +121,7 @@ export default class BrowserWinHandler {
       // On macOS, when the user closes the window we really
       // just hide it. This lets us activate quickly and
       // keep all our interesting logic in the renderer.
-      if (process.platform === "darwin" && !quitting) {
+      if (__DARWIN__ && !quitting) {
         e.preventDefault();
 
         if (this.browserWindow.isFullScreen()) {
