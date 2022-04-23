@@ -8,9 +8,11 @@ export const __WINDOWS__ = process.platform === "win32";
 app.on("window-all-closed", function () {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q.
-  if (!__DARWIN__) {
-    app.quit();
+  if (__DARWIN__) {
+    return;
   }
+
+  app.quit();
 });
 
 app.whenReady().then(() => {
@@ -19,9 +21,7 @@ app.whenReady().then(() => {
   }
 
   if (__DARWIN__) {
-    globalShortcut.register("CommandOrControl+Shift+Space", () =>
-      app.showEmojiPanel()
-    );
+    globalShortcut.register("Super+Shift+Space", () => app.showEmojiPanel());
   }
 
   if (__LINUX__) {
@@ -29,7 +29,7 @@ app.whenReady().then(() => {
   }
 
   if (__WINDOWS__) {
-    globalShortcut.register("MetaOrSuper+.", () => app.showEmojiPanel());
+    globalShortcut.register("Super+.", () => app.showEmojiPanel());
   }
 });
 
