@@ -1,6 +1,6 @@
-/* eslint-disable */
 import { __DARWIN__ } from ".";
 import { EventEmitter } from "events";
+import ElectronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 import { BrowserWindow, app, ipcMain } from "electron";
 import windowStateKeeper from "electron-window-state";
@@ -10,7 +10,8 @@ const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
 const isProduction = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
 
-autoUpdater.logger = require("electron-log");
+autoUpdater.logger = ElectronLog;
+autoUpdater.logger.transports.file.level = "info";
 
 const Unlock = new (require("@unlocksh/electron-license"))(
   {
@@ -117,22 +118,6 @@ export default class BrowserWinHandler {
 
     ipcMain.handle("get-window-state", async () => {
       return new WindowStateHandler(this.browserWindow).get();
-    });
-
-    ipcMain.handle("check-for-updates", async () => {
-      console.log("checking");
-
-      const response = await autoUpdater.checkForUpdates();
-
-      console.log(response);
-
-      const otherResponse = await autoUpdater.downloadUpdate(
-        response.cancellationToken
-      );
-
-      console.log(otherResponse);
-
-      return response;
     });
 
     this.browserWindow.on("close", (e) => {
