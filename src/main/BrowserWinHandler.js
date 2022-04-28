@@ -10,6 +10,8 @@ const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
 const isProduction = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
 
+autoUpdater.logger = require("electron-log");
+
 const Unlock = new (require("@unlocksh/electron-license"))(
   {
     api: {
@@ -25,7 +27,7 @@ const Unlock = new (require("@unlocksh/electron-license"))(
       logo: "http://showcode.app/app-icon.svg",
     },
   },
-  isProduction ? autoUpdater : null
+  autoUpdater
 );
 
 export default class BrowserWinHandler {
@@ -115,6 +117,22 @@ export default class BrowserWinHandler {
 
     ipcMain.handle("get-window-state", async () => {
       return new WindowStateHandler(this.browserWindow).get();
+    });
+
+    ipcMain.handle("check-for-updates", async () => {
+      console.log("checking");
+
+      const response = await autoUpdater.checkForUpdates();
+
+      console.log(response);
+
+      const otherResponse = await autoUpdater.downloadUpdate(
+        response.cancellationToken
+      );
+
+      console.log(otherResponse);
+
+      return response;
     });
 
     this.browserWindow.on("close", (e) => {
