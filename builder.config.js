@@ -9,6 +9,7 @@ const getEnv = (name, expectedVal) => {
   // Set the variable
   // Try looking for the name on its own, as well as the Github Actions version ("INPUT_")
   const value = getEnv(name) || getEnv(`INPUT_${name}`);
+
   if (!value) {
     console.log(`"${name}" variable is not defined`);
   }
@@ -24,6 +25,7 @@ const getEnv = (name, expectedVal) => {
 };
 
 const isRelease = getEnv("RELEASE", "true"); // Controls whether the app will be codesigned, notarized, published
+
 console.log(`Is release? ${isRelease}`);
 
 const ICONS_DIR = "build/icons/";
@@ -86,10 +88,15 @@ const macOS = {
 };
 
 module.exports = {
+  name: "Showcode",
+  publish: false,
   productName: "Showcode",
   appId: "com.showcode.app",
-  artifactName: "Showcode-${version}-${os}-${arch}.${ext}",
-  publish: false,
+  description: "Create beautiful images of code.",
+  homepage: "https://showcode.app",
+  projectUrl: "https://github.com/stevebauman/showcode",
+  repository: "https://github.com/stevebauman/showcode",
+  artifactName: "${productName}-${version}-${os}-${arch}.${ext}",
   directories: {
     output: "build",
   },
