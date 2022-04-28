@@ -99,8 +99,8 @@ module.exports = {
   ],
   extraResources: [
     {
-      from: "src/extraResources/app-update.yml",
-      to: "",
+      from: "./src/extraResources",
+      to: ".",
     },
     {
       from: "./node_modules/@unlocksh/electron-license/license",
