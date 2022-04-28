@@ -99,7 +99,7 @@ module.exports = {
   ],
   extraResources: [
     {
-      from: "src/extraResources/",
+      from: "src/extraResources/app-update.yml",
       to: "",
     },
     {
