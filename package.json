@@ -18,6 +18,10 @@
   },
   "devDependencies": {
     "@unlocksh/electron-license": "^0.0.9",
+    "@xpda-dev/core": "^0.1.6",
+    "@xpda-dev/electron-builder": "^0.2.1",
+    "@xpda-dev/electron-launcher": "^0.3.0",
+    "@xpda-dev/webpack-step": "^0.1.6",
     "cross-env": "^7.0.3",
     "deepmerge": "^4.2.2",
     "electron": "^16.0.5",
