@@ -50,7 +50,15 @@ const linuxOS = {
 
 const macOS = {
   mac: {
-    target: "default",
+    target: {
+      // target: 'default' is required
+      // It creates dmg + zip files for Mac builds
+      // This is expected for auto-updates to work properly
+      // Waiting on: https://github.com/electron-userland/electron-builder/issues/2199
+      target: "default",
+      // Build for M1 chips (arm64) + Intel (x64) chips
+      arch: ["arm64", "x64"],
+    },
     icon: ICONS_DIR + "con.icns",
     entitlements: "build/entitlements.mac.plist", // Required for MacOS Catalina
     entitlementsInherit: "build/entitlements.mac.plist", // Required for MacOS Catalina
