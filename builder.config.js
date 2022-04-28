@@ -114,8 +114,8 @@ module.exports = {
   ],
   extraResources: [
     {
-      from: "src/extraResources/",
-      to: "",
+      from: "./src/extraResources",
+      to: ".",
     },
     {
       from: "./node_modules/@unlocksh/electron-license/license",
