@@ -33,4 +33,5 @@ app.whenReady().then(() => {
   }
 });
 
+require("./menu");
 require("./mainWindow");

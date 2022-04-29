@@ -1,4 +1,5 @@
 import { BrowserWindow } from "electron";
+import BrowserEventHandler from "./BrowserEventHandler";
 
 export default class WindowStateHandler {
   /**
@@ -47,10 +48,6 @@ export default class WindowStateHandler {
    * @param {*} state
    */
   send(state) {
-    if (this.browserWindow.webContents.isDestroyed()) {
-      return;
-    }
-
-    this.browserWindow.webContents.send("window-state-changed", state);
+    BrowserEventHandler.send(this.browserWindow, "window-state-changed", state);
   }
 }

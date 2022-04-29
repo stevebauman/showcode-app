@@ -1,6 +1,5 @@
 import { __DARWIN__ } from ".";
 import { EventEmitter } from "events";
-import ElectronLog from "electron-log";
 import { autoUpdater } from "electron-updater";
 import { BrowserWindow, app, ipcMain } from "electron";
 import windowStateKeeper from "electron-window-state";
@@ -10,8 +9,11 @@ const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
 const isProduction = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
 
-autoUpdater.logger = ElectronLog;
-autoUpdater.logger.transports.file.level = "info";
+const log = require("electron-log");
+
+log.transports.file.level = "info";
+
+autoUpdater.logger = log;
 
 const Unlock = new (require("@unlocksh/electron-license"))(
   {

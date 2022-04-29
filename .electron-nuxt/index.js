@@ -3,7 +3,7 @@ const webpack = require("webpack");
 const electron = require("electron");
 
 const { Pipeline, Logger } = require("@xpda-dev/core");
-const { ElectronLauncher } = require("electron-launcher");
+const { ElectronLauncher } = require("@xpda-dev/electron-launcher");
 const { ElectronBuilder } = require("@xpda-dev/electron-builder");
 const { Webpack } = require("@xpda-dev/webpack-step");
 const resourcesPath = require("./resources-path-provider");
