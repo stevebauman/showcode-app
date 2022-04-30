@@ -93,9 +93,6 @@ module.exports = {
   productName: "Showcode",
   appId: "com.showcode.app",
   description: "Create beautiful images of code.",
-  homepage: "https://showcode.app",
-  projectUrl: "https://github.com/stevebauman/showcode",
-  repository: "https://github.com/stevebauman/showcode",
   artifactName: "${productName}-${version}-${os}-${arch}.${ext}",
   directories: {
     output: "build",
