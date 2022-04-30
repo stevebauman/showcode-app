@@ -88,7 +88,6 @@ const macOS = {
 };
 
 module.exports = {
-  name: "Showcode",
   publish: false,
   productName: "Showcode",
   appId: "com.showcode.app",
