@@ -92,7 +92,6 @@ module.exports = {
   publish: false,
   productName: "Showcode",
   appId: "com.showcode.app",
-  description: "Create beautiful images of code.",
   artifactName: "${productName}-${version}-${os}-${arch}.${ext}",
   directories: {
     output: "build",
