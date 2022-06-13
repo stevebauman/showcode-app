@@ -1,4 +1,5 @@
 import { __DARWIN__ } from ".";
+import { getFonts } from "font-list";
 import { EventEmitter } from "events";
 import { autoUpdater } from "electron-updater";
 import { BrowserWindow, app, ipcMain } from "electron";
@@ -109,8 +110,8 @@ export default class BrowserWinHandler {
 
     ipcMain.on("close", () => this.browserWindow.close());
     ipcMain.on("maximize", () => this.browserWindow.maximize());
-    ipcMain.on("unmaximize", () => this.browserWindow.unmaximize());
     ipcMain.on("minimize", () => this.browserWindow.minimize());
+    ipcMain.on("unmaximize", () => this.browserWindow.unmaximize());
 
     ipcMain.on("double-click-title-bar", () => {
       this.browserWindow.isMaximized()
@@ -120,6 +121,10 @@ export default class BrowserWinHandler {
 
     ipcMain.handle("get-window-state", async () => {
       return new WindowStateHandler(this.browserWindow).get();
+    });
+
+    ipcMain.handle("get-system-fonts", async () => {
+      return await getFonts({ disableQuoting: true });
     });
 
     this.browserWindow.on("close", (e) => {
