@@ -8,9 +8,9 @@ const deepmerge = require("deepmerge");
 const nodeExternals = require("webpack-node-externals");
 const resourcesPath = require("../resources-path-provider");
 const {
-  RENDERER_PROCESS_DIR,
   DIST_DIR,
   DISABLE_BABEL_LOADER,
+  RENDERER_PROCESS_DIR,
 } = require("../config");
 const userNuxtConfig = require("../../src/renderer/nuxt.config");
 
