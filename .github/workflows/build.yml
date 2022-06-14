@@ -38,6 +38,7 @@ jobs:
         env:
           # macOS notarization API key
           RELEASE: true
+          IS_DESKTOP: true
           CSC_LINK: ${{ secrets.csc_link }}
           CSC_KEY_PASSWORD: ${{ secrets.csc_key_password }}
           GH_TOKEN: ${{ secrets.github_token }}
