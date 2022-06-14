@@ -36,7 +36,6 @@ jobs:
       - name: Build Application
         run: yarn build
         env:
-          # macOS notarization API key
           RELEASE: true
           IS_DESKTOP: true
           CSC_LINK: ${{ secrets.csc_link }}
