@@ -1,6 +1,6 @@
 import { __DARWIN__ } from ".";
-import { getFonts } from "font-list";
 import { EventEmitter } from "events";
+import SystemFonts from "system-font-families";
 import { autoUpdater } from "electron-updater";
 import { BrowserWindow, app, ipcMain } from "electron";
 import windowStateKeeper from "electron-window-state";
@@ -9,6 +9,8 @@ import WindowStateHandler from "./WindowStateHandler";
 const DEV_SERVER_URL = process.env.DEV_SERVER_URL;
 const isProduction = process.env.NODE_ENV === "production";
 const isDev = process.env.NODE_ENV === "development";
+
+const systemFonts = new SystemFonts();
 
 const log = require("electron-log");
 
@@ -124,7 +126,7 @@ export default class BrowserWinHandler {
     });
 
     ipcMain.handle("get-system-fonts", async () => {
-      return await getFonts({ disableQuoting: true });
+      return await systemFonts.getFonts();
     });
 
     this.browserWindow.on("close", (e) => {
