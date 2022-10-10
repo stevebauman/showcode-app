@@ -32,9 +32,12 @@ function hasConfigArgument(array) {
   for (const el of array) if (el === "--config" || el === "-c") return true;
   return false;
 }
+
 const argumentsArray = process.argv.slice(2);
-if (!hasConfigArgument(argumentsArray))
+
+if (!hasConfigArgument(argumentsArray)) {
   argumentsArray.push("--config", "builder.config.js");
+}
 
 const builder = new ElectronBuilder({
   processArgv: argumentsArray,

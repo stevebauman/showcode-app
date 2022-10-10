@@ -1,6 +1,6 @@
 import { __DARWIN__ } from "./index";
-import { app, dialog, shell, Menu } from "electron";
 import { autoUpdater } from "electron-updater";
+import { app, dialog, shell, Menu } from "electron";
 
 const template = [
   ...(__DARWIN__

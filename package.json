@@ -1,6 +1,6 @@
 {
   "name": "showcode-app",
-  "version": "1.17.2",
+  "version": "1.17.3",
   "description": "Create beautiful code screenshots.",
   "keywords": [],
   "homepage": "https://github.com/michalzaq12/electron-nuxt/blob/master/README.md",
@@ -8,8 +8,8 @@
   "author": "Steve Bauman <steven_bauman@outlook.com>",
   "main": "./dist/main/index.js",
   "scripts": {
-    "dev": "node .electron-nuxt/dev.js",
     "build": "node .electron-nuxt/build.js",
+    "dev": "node .electron-nuxt/dev.js",
     "preinstall": "node .electron-nuxt/check-engines.js",
     "postinstall": "electron-builder install-app-deps"
   },
@@ -36,6 +36,7 @@
     "path": "0.12.7",
     "showcode": "file:src/renderer",
     "system-font-families": "0.6.0",
+    "v8-compile-cache": "^2.3.0",
     "webpack": "4.46.0",
     "webpack-node-externals": "3.0.0"
   },

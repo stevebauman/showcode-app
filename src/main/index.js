@@ -1,3 +1,4 @@
+import "v8-compile-cache";
 import { app, globalShortcut } from "electron";
 
 export const __DARWIN__ = process.platform === "darwin";
