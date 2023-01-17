@@ -14,33 +14,33 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "resolutions": {
-    "@types/node": "14.14.9"
+    "@types/node": "^16.0.0"
   },
   "devDependencies": {
     "@unlocksh/electron-license": "^0.0.9",
-    "@xpda-dev/core": "0.1.6",
-    "@xpda-dev/electron-builder": "0.2.1",
-    "@xpda-dev/electron-launcher": "0.3.0",
-    "@xpda-dev/webpack-step": "0.1.6",
-    "cross-env": "7.0.3",
-    "deepmerge": "4.2.2",
-    "electron": "16.0.5",
-    "electron-builder": "22.14.5",
+    "@xpda-dev/core": "^0.1.6",
+    "@xpda-dev/electron-builder": "^0.2.1",
+    "@xpda-dev/electron-launcher": "^0.3.0",
+    "@xpda-dev/webpack-step": "^0.1.6",
+    "cross-env": "^7.0.3",
+    "deepmerge": "^4.2.2",
+    "electron": "^18.0.0",
+    "electron-builder": "^23.0.0",
     "electron-devtools-installer": "3.2.0",
     "electron-icon-maker": "0.0.5",
-    "electron-log": "4.4.6",
-    "electron-notarize": "1.1.1",
-    "electron-updater": "4.6.1",
-    "electron-window-state": "5.0.3",
-    "nuxt": "2.15.8",
-    "path": "0.12.7",
+    "electron-log": "^4.4.6",
+    "electron-notarize": "^1.1.1",
+    "electron-updater": "^4.6.1",
+    "electron-window-state": "^5.0.3",
+    "nuxt": "^2.15.8",
+    "path": "^0.12.7",
     "showcode": "file:src/renderer",
-    "system-font-families": "0.6.0",
+    "system-font-families": "^0.6.0",
     "v8-compile-cache": "^2.3.0",
-    "webpack": "4.46.0",
-    "webpack-node-externals": "3.0.0"
+    "webpack": "^4.46.0",
+    "webpack-node-externals": "^3.0.0"
   },
   "engines": {
-    "node": ">=14.14.9"
+    "node": ">=16.0.0"
   }
 }
