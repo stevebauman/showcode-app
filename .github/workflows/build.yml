@@ -13,18 +13,12 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        if: startsWith(matrix.os, 'macos')
-        with:
-          python-version: '2.7.18'
 
       - name: Clone Showcode
         run: git clone https://github.com/stevebauman/showcode.git ./src/renderer
