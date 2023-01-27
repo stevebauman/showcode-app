@@ -23,7 +23,10 @@ jobs:
       - name: Clone Showcode
         run: git clone https://github.com/stevebauman/showcode.git ./src/renderer
 
-      - name: Install Dependencies
+      - name: Install Showcode Dependencies
+        run: (cd ./src/renderer && yarn install)
+
+      - name: Install App Dependencies
         run: yarn install
 
       - name: Prepare for app notarization
