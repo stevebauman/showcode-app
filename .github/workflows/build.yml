@@ -24,8 +24,13 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Clear Showcode Folder
+      - name: Clear Showcode Folder (Unix)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: rm -rf ./src/renderer
+        
+      - name: Clear Showcode Folder (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: rmdir /s src\renderer
 
       - name: Clone Showcode
         run: git submodule update --init --recursive
