@@ -30,7 +30,7 @@ jobs:
         
       - name: Clear Showcode Folder (Windows)
         if: startsWith(matrix.os, 'windows')
-        run: rd /s /q src\renderer
+        run: Remove-Item -Path "src\renderer" -Recurse -Force
 
       - name: Clone Showcode
         run: git submodule update --init --recursive
