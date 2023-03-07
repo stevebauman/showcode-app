@@ -25,7 +25,7 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       - name: Clone Showcode
-        run: git clone https://github.com/stevebauman/showcode.git ./src/renderer
+        run: git submodule update --init --recursive
 
       - name: Install Showcode Dependencies
         run: (cd ./src/renderer && yarn install)
