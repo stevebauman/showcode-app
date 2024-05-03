@@ -17,6 +17,7 @@
     "@types/node": "^16.0.0"
   },
   "devDependencies": {
+    "@electron/notarize": "^2.3.0",
     "@unlocksh/electron-license": "^0.0.9",
     "@xpda-dev/core": "^0.1.6",
     "@xpda-dev/electron-builder": "^0.2.1",
@@ -29,7 +30,6 @@
     "electron-devtools-installer": "3.2.0",
     "electron-icon-maker": "0.0.5",
     "electron-log": "^4.4.6",
-    "electron-notarize": "^1.1.1",
     "electron-updater": "^4.6.1",
     "electron-window-state": "^5.0.3",
     "nuxt": "^2.15.8",
