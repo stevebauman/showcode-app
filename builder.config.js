@@ -66,9 +66,7 @@ const macOS = {
     entitlementsInherit: "build/entitlements.mac.plist", // Required for MacOS Catalina
   },
   afterSign: isRelease ? "scripts/notarize.js" : null, // Notarize Mac (ONLY for deploys)
-  afterAllArtifactBuild: isRelease
-    ? "scripts/fixMacDistributionArchive.js"
-    : null,
+  afterAllArtifactBuild: null,
   dmg: {
     sign: false, // Required for MacOS Catalina
     contents: [
@@ -88,7 +86,7 @@ const macOS = {
 };
 
 module.exports = {
-  publish: "never",
+  publish: false,
   productName: "Showcode",
   appId: "com.showcode.app",
   artifactName: "${productName}-${version}-${os}-${arch}.${ext}",
