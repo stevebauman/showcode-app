@@ -88,7 +88,7 @@ const macOS = {
 };
 
 module.exports = {
-  publish: false,
+  publish: "never",
   productName: "Showcode",
   appId: "com.showcode.app",
   artifactName: "${productName}-${version}-${os}-${arch}.${ext}",
