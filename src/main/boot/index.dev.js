@@ -21,7 +21,7 @@ app.on("ready", () => {
       click: () => {
         app.exit(ELECTRON_RELAUNCH_CODE);
       },
-    })
+    }),
   );
 
   Menu.setApplicationMenu(menu);

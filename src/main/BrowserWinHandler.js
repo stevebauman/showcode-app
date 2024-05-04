@@ -33,7 +33,7 @@ const Unlock = new (require("@unlocksh/electron-license"))(
       logo: "http://showcode.app/app-icon.svg",
     },
   },
-  autoUpdater
+  autoUpdater,
 );
 
 export default class BrowserWinHandler {
@@ -182,7 +182,7 @@ export default class BrowserWinHandler {
   async loadPage(pagePath) {
     if (!this.browserWindow) {
       return Promise.reject(
-        new Error("The page could not be loaded before win 'created' event")
+        new Error("The page could not be loaded before win 'created' event"),
       );
     }
 

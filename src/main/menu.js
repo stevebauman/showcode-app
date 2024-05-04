@@ -102,7 +102,7 @@ const template = [
         label: "GitHub Issues",
         click: async () => {
           await shell.openExternal(
-            "https://github.com/stevebauman/showcode/issues"
+            "https://github.com/stevebauman/showcode/issues",
           );
         },
       },

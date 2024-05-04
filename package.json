@@ -32,7 +32,7 @@
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.1",
     "electron-window-state": "^5.0.3",
-    "nuxt": "^2.15.8",
+    "nuxt": "2.15.7",
     "path": "^0.12.7",
     "showcode": "file:src/renderer",
     "system-font-families": "^0.6.0",
