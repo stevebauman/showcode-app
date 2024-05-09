@@ -107,13 +107,13 @@ module.exports = {
   ],
   extraResources: [
     {
-      from: "./src/extraResources",
+      from: "./extraResources",
       to: ".",
     },
     {
-      from: "./node_modules/@unlocksh/electron-license/license",
+      from: "./node_modules/@anystack/electron-license/license",
       to: "license",
-      filter: "**/*",
+      filter: "**/*"
     },
   ],
   ...windowsOS,
