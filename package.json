@@ -1,46 +1,38 @@
 {
-  "name": "showcode-app",
-  "version": "1.23.0",
-  "description": "Create beautiful code screenshots.",
-  "keywords": [],
-  "homepage": "https://github.com/michalzaq12/electron-nuxt/blob/master/README.md",
-  "license": "MIT",
-  "author": "Steve Bauman <steven_bauman@outlook.com>",
-  "main": "./dist/main/index.js",
+  "name": "showcode",
+  "version": "1.24.0",
+  "description": "Create beautiful images of code",
+  "main": "./main/index.js",
   "scripts": {
-    "build": "node .electron-nuxt/build.js",
-    "dev": "node .electron-nuxt/dev.js",
-    "preinstall": "node .electron-nuxt/check-engines.js",
-    "postinstall": "electron-builder install-app-deps"
+    "dev": "concurrently \"cd showcode && IS_DESKTOP=true yarn run nuxt\" \"wait-on http://localhost:3000 && electron .\"",
+    "generate": "cd showcode && IS_DESKTOP=true yarn generate",
+    "start": "cd showcode && yarn generate && electron .",
+    "build": "NODE_ENV=production electron-builder"
   },
-  "resolutions": {
-    "@types/node": "^16.0.0"
+  "build": {
+    "extraResources": [
+      {
+        "from": "./node_modules/@anystack/electron-license/license",
+        "to": "license",
+        "filter": "**/*"
+      }
+    ]
   },
+  "author": "Steve Bauman",
+  "license": "MIT",
   "devDependencies": {
-    "@electron/notarize": "^2.3.0",
-    "@unlocksh/electron-license": "^0.0.9",
-    "@xpda-dev/core": "^0.1.6",
-    "@xpda-dev/electron-builder": "^0.2.1",
-    "@xpda-dev/electron-launcher": "^0.3.0",
-    "@xpda-dev/webpack-step": "^0.1.6",
-    "cross-env": "^7.0.3",
-    "deepmerge": "^4.2.2",
-    "electron": "^18.0.0",
-    "electron-builder": "^23.0.0",
-    "electron-devtools-installer": "3.2.0",
-    "electron-icon-maker": "0.0.5",
-    "electron-log": "^4.4.6",
-    "electron-updater": "^4.6.1",
-    "electron-window-state": "^5.0.3",
-    "nuxt": "2.15.8",
-    "path": "^0.12.7",
-    "showcode": "file:src/renderer",
-    "system-font-families": "^0.6.0",
-    "v8-compile-cache": "^2.3.0",
-    "webpack": "^4.46.0",
-    "webpack-node-externals": "^3.0.0"
+    "electron": "^30.0.3",
+    "concurrently": "^8.2.2",
+    "wait-on": "^7.2.0",
+    "electron-builder": "^23.0.0"
   },
-  "engines": {
-    "node": ">=16.0.0"
+  "dependencies": {
+    "@anystack/electron-license": "^0.0.15",
+    "@electron/notarize": "^2.3.0",
+    "dotenv": "^16.4.5",
+    "electron-log": "^5.1.2",
+    "electron-updater": "^6.1.8",
+    "electron-window-state": "^5.0.3",
+    "system-font-families": "^0.6.0"
   }
 }
