@@ -25,7 +25,18 @@
         "to": "license",
         "filter": "**/*"
       }
-    ]
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "arch": [
+        "x64",
+        "arm64",
+        "universal"
+      ]
+    }
   },
   "author": "Steve Bauman",
   "license": "MIT",
