@@ -1,7 +1,11 @@
 {
   "name": "showcode-app",
   "version": "1.24.0",
-  "description": "Create beautiful images of code",
+  "description": "Create beautiful code screenshots.",
+  "keywords": [],
+  "homepage": "https://github.com/michalzaq12/electron-nuxt/blob/master/README.md",
+  "license": "MIT",
+  "author": "Steve Bauman <steven_bauman@outlook.com>",
   "main": "./main/index.js",
   "scripts": {
     "dev": "concurrently \"cd showcode && IS_DESKTOP=true yarn run nuxt\" \"wait-on http://localhost:3000 && electron .\"",
@@ -37,8 +41,6 @@
       "entitlementsInherit": "build/entitlements.mac.plist"
     }
   },
-  "author": "Steve Bauman",
-  "license": "MIT",
   "devDependencies": {
     "electron": "^30.0.3",
     "electron-builder": "^23.0.0"
