@@ -29,14 +29,12 @@
     "mac": {
       "target": [
         {
-          "target": "dmg",
-          "arch": ["x64", "arm64", "universal"]
-        },
-        {
-          "target": "zip",
-          "arch": ["x64", "arm64", "universal"]
+          "target": "default",
+          "arch": ["arm64", "x64"]
         }
-      ]
+      ],
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
     }
   },
   "author": "Steve Bauman",
