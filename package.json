@@ -28,7 +28,7 @@
         "to": "license",
         "filter": "**/*"
       }
-    ],
+    ]
   },
   "author": "Steve Bauman",
   "license": "MIT",
