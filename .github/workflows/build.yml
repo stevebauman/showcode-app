@@ -49,10 +49,11 @@ jobs:
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
       - name: Build Application
-        run: yarn build
+        run: electron-builder
         env:
           RELEASE: true
           IS_DESKTOP: true
+          NODE_ENV: production
           CSC_LINK: ${{ secrets.csc_link }}
           CSC_KEY_PASSWORD: ${{ secrets.csc_key_password }}
           GH_TOKEN: ${{ secrets.github_token }}
