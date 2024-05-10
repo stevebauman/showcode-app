@@ -15,9 +15,6 @@
     "appId": "com.showcode.app",
     "afterSign": "scripts/notarize.js",
     "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "directories": {
-      "output": "build"
-    },
     "extraResources": [
       {
         "from": "./extraResources",
