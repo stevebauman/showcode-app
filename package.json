@@ -6,11 +6,20 @@
   "scripts": {
     "dev": "concurrently \"cd showcode && IS_DESKTOP=true yarn run nuxt\" \"wait-on http://localhost:3000 && electron .\"",
     "generate": "cd showcode && IS_DESKTOP=true yarn generate",
-    "start": "cd showcode && yarn generate && electron .",
-    "build": "NODE_ENV=production electron-builder"
+    "build": "NODE_ENV=production electron-builder",
+    "start": "electron ."
   },
   "build": {
+    "publish": false,
+    "productName": "Showcode",
+    "appId": "com.showcode.app",
+    "afterSign": "scripts/notarize.js",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "extraResources": [
+      {
+        "from": "./extraResources",
+        "to": "."
+      },
       {
         "from": "./node_modules/@anystack/electron-license/license",
         "to": "license",
