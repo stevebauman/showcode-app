@@ -1,5 +1,5 @@
 {
-  "name": "showcode",
+  "name": "showcode-app",
   "version": "1.24.0",
   "description": "Create beautiful images of code",
   "main": "./main/index.js",
@@ -41,8 +41,6 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^30.0.3",
-    "concurrently": "^8.2.2",
-    "wait-on": "^7.2.0",
     "electron-builder": "^23.0.0"
   },
   "dependencies": {
