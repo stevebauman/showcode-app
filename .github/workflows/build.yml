@@ -9,12 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
 
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
-        
+
       - uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -27,7 +27,7 @@ jobs:
       - name: Clear Showcode Folder (Unix)
         if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
         run: rm -rf ./showcode
-        
+
       - name: Clear Showcode Folder (Windows)
         if: startsWith(matrix.os, 'windows')
         run: Remove-Item -Path "showcode" -Recurse -Force
@@ -49,7 +49,7 @@ jobs:
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
       - name: Build Application
-        run: yarn electron-builder
+        run: yarn electron-builder -c builder.config.js
         env:
           RELEASE: true
           IS_DESKTOP: true
