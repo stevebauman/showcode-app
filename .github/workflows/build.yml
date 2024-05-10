@@ -81,4 +81,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-build
-          path: build/Showcode-*.AppImage
+          path: dist/Showcode-*.AppImage
