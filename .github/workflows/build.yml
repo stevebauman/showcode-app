@@ -38,6 +38,9 @@ jobs:
       - name: Install Showcode Dependencies
         run: (cd ./showcode && yarn install)
 
+      - name: Generate Showcode
+        run: (cd ./showcode && yarn generate)
+
       - name: Install App Dependencies
         run: yarn install
 
