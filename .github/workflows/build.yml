@@ -49,7 +49,7 @@ jobs:
           echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
       - name: Build Application
-        run: electron-builder
+        run: yarn electron-builder
         env:
           RELEASE: true
           IS_DESKTOP: true
