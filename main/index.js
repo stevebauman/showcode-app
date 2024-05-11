@@ -1,8 +1,20 @@
-const {app, globalShortcut} = require("electron");
+const {app, protocol, globalShortcut} = require("electron");
+const path = require("path");
 require('dotenv').config();
 const __DARWIN__ = process.platform === "darwin";
 const __LINUX__ = process.platform === "linux";
 const __WINDOWS__ = process.platform === "win32";
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'app',
+    privileges: {
+      secure: true,
+      standard: true,
+      supportFetchAPI: true,
+    },
+  },
+]);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -13,6 +25,14 @@ app.on("window-all-closed", function () {
     }
 
     app.quit();
+});
+
+app.on('ready', function () {
+  protocol.registerFileProtocol('app', (request, callback) => {
+    const url = new URL(request.url);
+
+    callback({ path: path.join(url.hostname, url.pathname) });
+  });
 });
 
 app.whenReady().then(() => {
@@ -38,7 +58,6 @@ module.exports = {
     __LINUX__,
     __WINDOWS__,
 };
-
 
 require("./menu.js");
 require("./mainWindow.js");

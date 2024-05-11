@@ -17,7 +17,7 @@ winHandler.onCreated(async (browserWindow) => {
         new WindowStateHandler(browserWindow).bind();
     });
 
-    await winHandler.loadPage("/");
+    await winHandler.load();
 });
 
 module.exports = winHandler;
