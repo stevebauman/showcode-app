@@ -116,7 +116,7 @@ const template = [
             {
                 label: "Download Latest Version",
                 click: async () => {
-                    await shell.openExternal("https://unlock.sh/download/showcode");
+                    await shell.openExternal("https://anystack.sh/download/showcode");
                 },
             },
         ],
