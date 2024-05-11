@@ -29,9 +29,13 @@ app.on("window-all-closed", function () {
 
 app.on('ready', function () {
   protocol.registerFileProtocol('app', (request, callback) => {
-    const url = new URL(request.url);
+    // Strip 'app://' from the URL
+    const url = request.url.substr(6);
 
-    callback({ path: path.join(url.hostname, url.pathname) });
+    // Build the full path to the file
+    const normalizedPath = path.normalize(`${__dirname}/../showcode/dist/${url}`);
+
+    callback({ path: normalizedPath });
   });
 });
 

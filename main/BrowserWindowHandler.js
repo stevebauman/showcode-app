@@ -182,13 +182,13 @@ module.exports = class BrowserWinHandler {
 
     async load() {
         if (!this.browserWindow) {
-            return Promise.reject(
-                new Error("The page could not be loaded before win 'created' event")
-            );
+          return Promise.reject(
+            new Error("The page could not be loaded before win 'created' event")
+          );
         }
 
         await this.browserWindow.loadURL(
-            `app://${__dirname}/../showcode/dist/index.html`
+          "app://./index.html"
         );
 
         Anystack.ifAuthorized(this.browserWindow);
