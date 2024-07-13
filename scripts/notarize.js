@@ -3,7 +3,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
-const { notarize } = require('@electron/notarize')
+const { notarize } = require('@electron/notarize');
 
 module.exports = async function (params) {
     if (process.platform !== 'darwin') {
@@ -23,18 +23,14 @@ module.exports = async function (params) {
 
     console.log(`Notarizing ${appId} found at ${appPath}`);
 
-    try {
-        await notarize({
-            tool: 'notarytool',
-            teamId: '4TR7C3X8XB',
-            appBundleId: appId,
-            appPath: appPath,
-            appleId: process.env.APPLE_ID,
-            appleIdPassword: process.env.APPLE_ID_PASSWORD,
-        });
-    } catch (error) {
-        console.error(error);
-    }
+    await notarize({
+        tool: 'notarytool',
+        teamId: '4TR7C3X8XB',
+        appBundleId: appId,
+        appPath: appPath,
+        appleId: process.env.APPLE_ID,
+        appleIdPassword: process.env.APPLE_ID_PASSWORD,
+    });
 
     console.log(`Done notarizing ${appId}`);
 };
