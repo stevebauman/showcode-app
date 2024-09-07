@@ -46,14 +46,14 @@
   },
   "devDependencies": {
     "electron": "^30.0.9",
-    "electron-builder": "^23.0.0"
+    "electron-builder": "^25.0.5"
   },
   "dependencies": {
     "@anystack/electron-license": "^0.0.15",
-    "@electron/notarize": "^2.3.2",
+    "@electron/notarize": "^2.4.0",
     "dotenv": "^16.4.5",
-    "electron-log": "^5.1.2",
-    "electron-updater": "^6.1.8",
+    "electron-log": "^5.2.0",
+    "electron-updater": "^6.3.4",
     "electron-window-state": "^5.0.3",
     "system-font-families": "^0.6.0"
   }
