@@ -68,21 +68,21 @@ jobs:
 
       - name: Upload MacOS Build
         if: startsWith(matrix.os, 'macos')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-build
           path: dist/Showcode-*.zip
 
       - name: Upload Windows Build
         if: startsWith(matrix.os, 'windows')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-build
           path: dist/Showcode-*.exe
 
       - name: Upload Linux Build
         if: startsWith(matrix.os, 'ubuntu')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }}-build
           path: dist/Showcode-*.AppImage
