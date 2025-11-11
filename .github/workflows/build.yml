@@ -15,9 +15,10 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node 16 for Showcode
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 16
 
       - uses: actions/cache@v4
         with:
@@ -42,6 +43,11 @@ jobs:
         run: (cd ./showcode && yarn generate)
         env:
           IS_DESKTOP: true
+
+      - name: Setup Node 20 for Electron App
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Install App Dependencies
         run: yarn install
