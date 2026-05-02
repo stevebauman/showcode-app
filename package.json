@@ -30,7 +30,7 @@
     "publish": {
       "provider": "github",
       "owner": "stevebauman",
-      "repo": "showcode"
+      "repo": "showcode-app"
     },
     "productName": "Showcode",
     "appId": "com.showcode.app",

@@ -1,6 +1,15 @@
 const {__DARWIN__} = require("./index.js");
 const {autoUpdater} = require("electron-updater");
 const {app, dialog, shell, Menu} = require("electron");
+const log = require("electron-log");
+
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = app.isPackaged ? "info" : "debug";
+autoUpdater.allowPrerelease = true;
+
+if (!app.isPackaged) {
+    autoUpdater.forceDevUpdateConfig = true;
+}
 
 const template = [
     ...(__DARWIN__
