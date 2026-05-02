@@ -1,7 +1,10 @@
 const {app, protocol, globalShortcut, net} = require("electron");
 const path = require("path");
 const {pathToFileURL} = require("url");
-require('dotenv').config();
+
+if (!app.isPackaged) {
+    require("dotenv").config();
+}
 const __DARWIN__ = process.platform === "darwin";
 const __LINUX__ = process.platform === "linux";
 const __WINDOWS__ = process.platform === "win32";
