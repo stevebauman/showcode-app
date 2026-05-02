@@ -4,6 +4,8 @@ dist
 build/*
 !build/icons
 !build/entitlements.mac.plist
+!build/dmg-background.html
+!build/dmg-background.png
 node_modules
 certificate.p12
 
