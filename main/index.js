@@ -1,24 +1,5 @@
-const {app, protocol, globalShortcut, net} = require("electron");
-const path = require("path");
-const {pathToFileURL} = require("url");
-
-if (!app.isPackaged) {
-    require("dotenv").config();
-}
-const __DARWIN__ = process.platform === "darwin";
-const __LINUX__ = process.platform === "linux";
-const __WINDOWS__ = process.platform === "win32";
-
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: 'app',
-    privileges: {
-      secure: true,
-      standard: true,
-      supportFetchAPI: true,
-    },
-  },
-]);
+import {app, globalShortcut} from "electron";
+import {__DARWIN__, __LINUX__, __WINDOWS__} from "./platform.js";
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -29,18 +10,6 @@ app.on("window-all-closed", function () {
     }
 
     app.quit();
-});
-
-app.on('ready', function () {
-  protocol.handle('app', (request) => {
-    // Strip 'app://' from the URL
-    const url = request.url.slice('app://'.length);
-
-    // Build the full path to the file
-    const normalizedPath = path.normalize(`${__dirname}/../showcode/dist/${url}`);
-
-    return net.fetch(pathToFileURL(normalizedPath).toString());
-  });
 });
 
 app.whenReady().then(() => {
@@ -61,11 +30,5 @@ app.whenReady().then(() => {
     }
 });
 
-module.exports = {
-    __DARWIN__,
-    __LINUX__,
-    __WINDOWS__,
-};
-
-require("./menu.js");
-require("./mainWindow.js");
+import "./menu.js";
+import "./mainWindow.js";

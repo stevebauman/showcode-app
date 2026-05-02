@@ -1,7 +1,9 @@
-const {__DARWIN__} = require("./index.js");
-const {autoUpdater} = require("electron-updater");
-const {app, dialog, shell, Menu} = require("electron");
-const log = require("electron-log");
+import electronUpdater from "electron-updater";
+import {app, dialog, shell, Menu} from "electron";
+import log from "electron-log";
+import {__DARWIN__} from "./platform.js";
+
+const {autoUpdater} = electronUpdater;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = app.isPackaged ? "info" : "debug";

@@ -1,20 +1,28 @@
-const path = require("path");
-const {__DARWIN__} = require("./index.js");
-const {EventEmitter} = require("events");
-const SystemFonts = require("system-font-families").default;
-const {BrowserWindow, app, ipcMain, dialog} = require("electron");
-const windowStateKeeper = require("electron-window-state");
-const WindowStateHandler = require("./WindowStateHandler");
+import path from "path";
+import {fileURLToPath} from "url";
+import {EventEmitter} from "events";
+import {BrowserWindow, app, ipcMain} from "electron";
+import windowStateKeeper from "electron-window-state";
+import serve from "electron-serve";
+import log from "electron-log";
+import SystemFontsModule from "system-font-families";
+import {__DARWIN__} from "./platform.js";
+import WindowStateHandler from "./WindowStateHandler.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const devServerUrl = process.env.DEV_SERVER_URL;
 
+const SystemFonts = SystemFontsModule.default;
 const systemFonts = new SystemFonts();
 
-const log = require("electron-log");
+const loadURL = devServerUrl
+    ? null
+    : serve({directory: "showcode/dist"});
 
 log.transports.file.level = "info";
 
-module.exports = class BrowserWinHandler {
+export default class BrowserWinHandler {
     /**
      * @param [options] {object} - browser window options
      * @param [allowRecreate] {boolean}
@@ -73,7 +81,7 @@ module.exports = class BrowserWinHandler {
                 ...this.options.webPreferences,
                 disableBlinkFeatures: "Auxclick", // Disable auxclick event. See: https://developers.google.com/web/updates/2016/10/auxclick
                 webSecurity: !devServerUrl, // Disable on dev to allow loading local resources
-                preload: path.join(__dirname, "preload.js"),
+                preload: path.join(__dirname, "preload.mjs"),
             },
         });
 
@@ -166,9 +174,11 @@ module.exports = class BrowserWinHandler {
           );
         }
 
-        await this.browserWindow.loadURL(
-          devServerUrl || "app://./index.html"
-        );
+        if (devServerUrl) {
+            await this.browserWindow.loadURL(devServerUrl);
+        } else {
+            await loadURL(this.browserWindow);
+        }
 
         this.browserWindow.show();
     }

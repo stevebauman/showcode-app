@@ -11,7 +11,7 @@
         input[type=color] { width: 60px; height: 40px; border: 1px solid #333; background: none; cursor: pointer; }
         button { padding: 10px 16px; background: #7c3aed; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; }
         button:hover { background: #6d28d9; }
-        canvas { width: 540px; height: 380px; border: 1px solid #333; display: block; }
+        canvas { width: 540px; height: 380px; border: 1px solid #333; display: block; image-rendering: -webkit-optimize-contrast; }
         .preset { background: #222; border: 1px solid #333; padding: 6px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; color: #eee; }
         .preset:hover { background: #333; }
         .presets { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <h1>DMG background generator — exported at 1080×760 (@2x)</h1>
+    <h1>DMG background generator — exports 540×380 (@1x) and 1080×760 (@2x)</h1>
 
     <div class="presets">
         <button class="preset" data-a="#0f172a" data-b="#4c1d95" data-c="#0c4a6e">Dark moody</button>
@@ -35,12 +35,12 @@
         <div class="control"><label for="c">Bottom-right</label><input type="color" id="c" value="#0c4a6e"></div>
         <div class="control"><label for="hl">Highlight</label><input type="color" id="hl" value="#ffffff"></div>
         <div class="control"><label for="ho">Highlight opacity</label><input type="range" id="ho" min="0" max="40" value="12"></div>
-        <button id="dl">Download PNG</button>
+        <button id="dl">Download both PNGs</button>
     </div>
 
     <canvas id="c2x" width="1080" height="760"></canvas>
 
-    <p class="hint">Save the downloaded file to <code>build/dmg-background.png</code>. The 540×380 display in the browser is the @1x preview; the exported file is the @2x retina source.</p>
+    <p class="hint">Save both files to <code>build/dmg-background.png</code> and <code>build/dmg-background@2x.png</code>. macOS picks the @2x version automatically on retina displays; the DMG window sizes itself from the @1x file (540×380).</p>
 
     <script>
         const canvas = document.getElementById('c2x');
@@ -90,11 +90,24 @@
             });
         });
 
-        document.getElementById('dl').addEventListener('click', () => {
+        function download(name, sourceCanvas) {
             const link = document.createElement('a');
-            link.download = 'dmg-background.png';
-            link.href = canvas.toDataURL('image/png');
+            link.download = name;
+            link.href = sourceCanvas.toDataURL('image/png');
             link.click();
+        }
+
+        document.getElementById('dl').addEventListener('click', () => {
+            const small = document.createElement('canvas');
+            small.width = 540;
+            small.height = 380;
+            const sctx = small.getContext('2d');
+            sctx.imageSmoothingEnabled = true;
+            sctx.imageSmoothingQuality = 'high';
+            sctx.drawImage(canvas, 0, 0, 540, 380);
+
+            download('dmg-background.png', small);
+            setTimeout(() => download('dmg-background@2x.png', canvas), 200);
         });
 
         render();

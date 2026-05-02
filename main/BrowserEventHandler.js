@@ -1,6 +1,6 @@
-const {BrowserWindow} = require("electron");
+import {BrowserWindow} from "electron";
 
-module.exports = class BrowserEventHandler {
+export default class BrowserEventHandler {
     /**
      * @param browserWindow {BrowserWindow}
      * @param {String} event

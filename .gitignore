@@ -6,6 +6,7 @@ build/*
 !build/entitlements.mac.plist
 !build/dmg-background.html
 !build/dmg-background.png
+!build/dmg-background@2x.png
 node_modules
 certificate.p12
 

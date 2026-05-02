@@ -1,6 +1,6 @@
-const {__DARWIN__, __WINDOWS__} = require("./index.js");
-const BrowserWinHandler = require("./BrowserWindowHandler");
-const WindowStateHandler = require("./WindowStateHandler");
+import {__DARWIN__, __WINDOWS__} from "./platform.js";
+import BrowserWinHandler from "./BrowserWindowHandler.js";
+import WindowStateHandler from "./WindowStateHandler.js";
 
 const options = {show: false};
 
@@ -20,4 +20,4 @@ winHandler.onCreated(async (browserWindow) => {
     await winHandler.load();
 });
 
-module.exports = winHandler;
+export default winHandler;

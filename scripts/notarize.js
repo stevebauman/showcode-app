@@ -1,11 +1,9 @@
-require('dotenv').config();
+import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import {notarize} from "@electron/notarize";
 
-const fs = require('fs');
-const path = require('path');
-
-const { notarize } = require('@electron/notarize');
-
-module.exports = async function (params) {
+export default async function (params) {
     if (process.platform !== 'darwin') {
         return;
     }
