@@ -1,0 +1,27 @@
+*.env
+.nuxt
+dist
+build/*
+!build/icons
+!build/entitlements.mac.plist
+node_modules
+certificate.p12
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# Electron build artifacts
+out/
+release/

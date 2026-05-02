@@ -1,0 +1,91 @@
+name: build
+
+on: workflow_dispatch
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Clear Showcode Folder (Unix)
+        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+        run: rm -rf ./showcode
+
+      - name: Clear Showcode Folder (Windows)
+        if: startsWith(matrix.os, 'windows')
+        run: Remove-Item -Path "showcode" -Recurse -Force
+
+      - name: Clone Showcode
+        run: git submodule update --init --recursive
+
+      - name: Install Showcode Dependencies
+        run: (cd ./showcode && npm install)
+
+      - name: Generate Showcode
+        run: (cd ./showcode && npm run generate)
+        env:
+          IS_DESKTOP: true
+
+      - name: Install App Dependencies
+        run: npm install
+
+      - name: Prepare for app notarization
+        if: startsWith(matrix.os, 'macos')
+        # Import Apple API key for app notarization on macOS
+        run: |
+          mkdir -p ~/private_keys/
+          echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
+
+      - name: Build Application
+        run: npx electron-builder
+        env:
+          RELEASE: true
+          NODE_ENV: production
+          CSC_LINK: ${{ secrets.csc_link }}
+          CSC_KEY_PASSWORD: ${{ secrets.csc_key_password }}
+          GH_TOKEN: ${{ secrets.github_token }}
+          APPLE_ID: ${{ secrets.apple_id }}
+          APPLE_ID_PASSWORD: ${{ secrets.apple_id_password }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.apple_id_password }}
+          APPLE_TEAM_ID: ${{ secrets.apple_team_id }}
+          API_KEY_ID: ${{ secrets.api_key_id }}
+          API_KEY_ISSUER_ID: ${{ secrets.api_key_issuer_id }}
+
+      - name: Upload MacOS Build
+        if: startsWith(matrix.os, 'macos')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: dist/Showcode-*.zip
+
+      - name: Upload Windows Build
+        if: startsWith(matrix.os, 'windows')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: dist/Showcode-*.exe
+
+      - name: Upload Linux Build
+        if: startsWith(matrix.os, 'ubuntu')
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}-build
+          path: dist/Showcode-*.AppImage
