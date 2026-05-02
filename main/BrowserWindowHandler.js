@@ -16,9 +16,7 @@ const devServerUrl = process.env.DEV_SERVER_URL;
 const SystemFonts = SystemFontsModule.default;
 const systemFonts = new SystemFonts();
 
-const loadURL = devServerUrl
-    ? null
-    : serve({directory: "showcode/dist"});
+const loadURL = devServerUrl ? null : serve({directory: "showcode/dist"});
 
 log.transports.file.level = "info";
 
@@ -169,9 +167,9 @@ export default class BrowserWinHandler {
 
     async load() {
         if (!this.browserWindow) {
-          return Promise.reject(
-            new Error("The page could not be loaded before win 'created' event")
-          );
+            return Promise.reject(
+                new Error("The page could not be loaded before win 'created' event"),
+            );
         }
 
         if (devServerUrl) {

@@ -1,89 +1,92 @@
 {
-  "name": "showcode-app",
-  "version": "2.0.0",
-  "description": "Create beautiful code screenshots.",
-  "keywords": [],
-  "homepage": "https://github.com/stevebauman/showcode-app",
-  "license": "MIT",
-  "author": "Steve Bauman <steven_bauman@outlook.com>",
-  "main": "./main/index.js",
-  "type": "module",
-  "scripts": {
-    "build": "cross-env NODE_ENV=production electron-builder",
-    "dev": "concurrently \"cd showcode && cross-env IS_DESKTOP=true npm run dev\" \"wait-on http://localhost:3000 && cross-env DEV_SERVER_URL=http://localhost:3000 electron .\"",
-    "generate": "cd showcode && cross-env IS_DESKTOP=true npm run generate",
-    "start": "electron ."
-  },
-  "dependencies": {
-    "electron-log": "^5.4.3",
-    "electron-serve": "^3.0.1",
-    "electron-updater": "^6.8.3",
-    "electron-window-state": "^5.0.3",
-    "system-font-families": "^0.6.0"
-  },
-  "devDependencies": {
-    "@electron/notarize": "^2.4.0",
-    "concurrently": "^9.2.1",
-    "cross-env": "^10.1.0",
-    "dotenv": "^16.4.5",
-    "electron": "^41.2.1",
-    "electron-builder": "^26.8.1",
-    "wait-on": "^9.0.5"
-  },
-  "build": {
-    "publish": {
-      "provider": "github",
-      "owner": "stevebauman",
-      "repo": "showcode-app"
+    "name": "showcode-app",
+    "version": "2.0.0",
+    "description": "Create beautiful code screenshots.",
+    "keywords": [],
+    "homepage": "https://github.com/stevebauman/showcode-app",
+    "license": "MIT",
+    "author": "Steve Bauman <steven_bauman@outlook.com>",
+    "main": "./main/index.js",
+    "type": "module",
+    "scripts": {
+        "build": "cross-env NODE_ENV=production electron-builder",
+        "dev": "concurrently \"cd showcode && cross-env IS_DESKTOP=true npm run dev\" \"wait-on http://localhost:3000 && cross-env DEV_SERVER_URL=http://localhost:3000 electron .\"",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "generate": "cd showcode && cross-env IS_DESKTOP=true npm run generate",
+        "start": "electron ."
     },
-    "productName": "Showcode",
-    "appId": "com.showcode.app",
-    "afterSign": "scripts/notarize.js",
-    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
-    "extraResources": [
-      {
-        "from": "./extraResources",
-        "to": "."
-      }
-    ],
-    "mac": {
-      "target": [
-        {
-          "target": "default",
-          "arch": [
-            "arm64",
-            "x64"
-          ]
-        }
-      ],
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist"
+    "dependencies": {
+        "electron-log": "^5.4.3",
+        "electron-serve": "^3.0.1",
+        "electron-updater": "^6.8.3",
+        "electron-window-state": "^5.0.3",
+        "system-font-families": "^0.6.0"
     },
-    "linux": {
-      "target": [
-        "AppImage"
-      ],
-      "category": "Utility"
+    "devDependencies": {
+        "@electron/notarize": "^2.4.0",
+        "concurrently": "^9.2.1",
+        "cross-env": "^10.1.0",
+        "dotenv": "^16.4.5",
+        "electron": "^41.2.1",
+        "electron-builder": "^26.8.1",
+        "prettier": "^3.8.3",
+        "wait-on": "^9.0.5"
     },
-    "dmg": {
-      "background": "build/dmg-background.png",
-      "window": {
-        "width": 540,
-        "height": 380
-      },
-      "contents": [
-        {
-          "x": 140,
-          "y": 200,
-          "type": "file"
+    "build": {
+        "publish": {
+            "provider": "github",
+            "owner": "stevebauman",
+            "repo": "showcode-app"
         },
-        {
-          "x": 400,
-          "y": 200,
-          "type": "link",
-          "path": "/Applications"
+        "productName": "Showcode",
+        "appId": "com.showcode.app",
+        "afterSign": "scripts/notarize.js",
+        "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+        "extraResources": [
+            {
+                "from": "./extraResources",
+                "to": "."
+            }
+        ],
+        "mac": {
+            "target": [
+                {
+                    "target": "default",
+                    "arch": [
+                        "arm64",
+                        "x64"
+                    ]
+                }
+            ],
+            "entitlements": "build/entitlements.mac.plist",
+            "entitlementsInherit": "build/entitlements.mac.plist"
+        },
+        "linux": {
+            "target": [
+                "AppImage"
+            ],
+            "category": "Utility"
+        },
+        "dmg": {
+            "background": "build/dmg-background.png",
+            "window": {
+                "width": 540,
+                "height": 380
+            },
+            "contents": [
+                {
+                    "x": 140,
+                    "y": 200,
+                    "type": "file"
+                },
+                {
+                    "x": 400,
+                    "y": 200,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
         }
-      ]
     }
-  }
 }

@@ -1,21 +1,10 @@
 import {contextBridge, ipcRenderer} from "electron";
 
-const validSendChannels = [
-    "minimize",
-    "maximize",
-    "unmaximize",
-    "close",
-    "double-click-title-bar",
-];
+const validSendChannels = ["minimize", "maximize", "unmaximize", "close", "double-click-title-bar"];
 
-const validInvokeChannels = [
-    "get-system-fonts",
-    "get-window-state",
-];
+const validInvokeChannels = ["get-system-fonts", "get-window-state"];
 
-const validReceiveChannels = [
-    "window-state-changed",
-];
+const validReceiveChannels = ["window-state-changed"];
 
 contextBridge.exposeInMainWorld("electronIpc", {
     send: (channel, ...args) => {

@@ -16,39 +16,39 @@ if (!app.isPackaged) {
 const template = [
     ...(__DARWIN__
         ? [
-            {
-                label: app.name,
-                submenu: [
-                    {role: "about"},
-                    {
-                        label: "Check for updates...",
-                        click: async () => {
-                            autoUpdater.once("update-not-available", () => {
-                                dialog.showMessageBox({
-                                    message: "You are running the latest version.",
-                                });
-                            });
+              {
+                  label: app.name,
+                  submenu: [
+                      {role: "about"},
+                      {
+                          label: "Check for updates...",
+                          click: async () => {
+                              autoUpdater.once("update-not-available", () => {
+                                  dialog.showMessageBox({
+                                      message: "You are running the latest version.",
+                                  });
+                              });
 
-                            autoUpdater.once("update-available", () => {
-                                dialog.showMessageBox({
-                                    message: "A new update is available! Downloading now...",
-                                });
-                            });
+                              autoUpdater.once("update-available", () => {
+                                  dialog.showMessageBox({
+                                      message: "A new update is available! Downloading now...",
+                                  });
+                              });
 
-                            await autoUpdater.checkForUpdates();
-                        },
-                    },
-                    {type: "separator"},
-                    {role: "services"},
-                    {type: "separator"},
-                    {role: "hide"},
-                    {role: "hideOthers"},
-                    {role: "unhide"},
-                    {type: "separator"},
-                    {role: "quit"},
-                ],
-            },
-        ]
+                              await autoUpdater.checkForUpdates();
+                          },
+                      },
+                      {type: "separator"},
+                      {role: "services"},
+                      {type: "separator"},
+                      {role: "hide"},
+                      {role: "hideOthers"},
+                      {role: "unhide"},
+                      {type: "separator"},
+                      {role: "quit"},
+                  ],
+              },
+          ]
         : []),
     {
         label: "File",
@@ -65,15 +65,15 @@ const template = [
             {role: "paste"},
             ...(__DARWIN__
                 ? [
-                    {role: "pasteAndMatchStyle"},
-                    {role: "delete"},
-                    {role: "selectAll"},
-                    {type: "separator"},
-                    {
-                        label: "Speech",
-                        submenu: [{role: "startSpeaking"}, {role: "stopSpeaking"}],
-                    },
-                ]
+                      {role: "pasteAndMatchStyle"},
+                      {role: "delete"},
+                      {role: "selectAll"},
+                      {type: "separator"},
+                      {
+                          label: "Speech",
+                          submenu: [{role: "startSpeaking"}, {role: "stopSpeaking"}],
+                      },
+                  ]
                 : [{role: "delete"}, {type: "separator"}, {role: "selectAll"}]),
         ],
     },
@@ -97,12 +97,7 @@ const template = [
             {role: "minimize"},
             {role: "zoom"},
             ...(__DARWIN__
-                ? [
-                    {type: "separator"},
-                    {role: "front"},
-                    {type: "separator"},
-                    {role: "window"},
-                ]
+                ? [{type: "separator"}, {role: "front"}, {type: "separator"}, {role: "window"}]
                 : [{role: "close"}]),
         ],
     },
@@ -112,9 +107,7 @@ const template = [
             {
                 label: "GitHub Issues",
                 click: async () => {
-                    await shell.openExternal(
-                        "https://github.com/stevebauman/showcode/issues",
-                    );
+                    await shell.openExternal("https://github.com/stevebauman/showcode/issues");
                 },
             },
             {
@@ -127,7 +120,9 @@ const template = [
             {
                 label: "Download Latest Version",
                 click: async () => {
-                    await shell.openExternal("https://github.com/stevebauman/showcode/releases/latest");
+                    await shell.openExternal(
+                        "https://github.com/stevebauman/showcode/releases/latest",
+                    );
                 },
             },
         ],

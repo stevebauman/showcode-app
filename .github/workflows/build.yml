@@ -3,71 +3,71 @@ name: build
 on: workflow_dispatch
 
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
+    release:
+        runs-on: ${{ matrix.os }}
 
-    permissions:
-      contents: write
+        permissions:
+            contents: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-latest, ubuntu-latest, windows-latest ]
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [macos-latest, ubuntu-latest, windows-latest]
 
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v5
+        steps:
+            - name: Check out Git repository
+              uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
+            - name: Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 22
 
-      - uses: actions/cache@v5
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+            - uses: actions/cache@v5
+              with:
+                  path: "**/node_modules"
+                  key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Clear Showcode Folder (Unix)
-        if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
-        run: rm -rf ./showcode
+            - name: Clear Showcode Folder (Unix)
+              if: startsWith(matrix.os, 'ubuntu') || startsWith(matrix.os, 'macos')
+              run: rm -rf ./showcode
 
-      - name: Clear Showcode Folder (Windows)
-        if: startsWith(matrix.os, 'windows')
-        run: Remove-Item -Path "showcode" -Recurse -Force
+            - name: Clear Showcode Folder (Windows)
+              if: startsWith(matrix.os, 'windows')
+              run: Remove-Item -Path "showcode" -Recurse -Force
 
-      - name: Clone Showcode
-        run: git submodule update --init --recursive
+            - name: Clone Showcode
+              run: git submodule update --init --recursive
 
-      - name: Install Showcode Dependencies
-        run: (cd ./showcode && npm install)
+            - name: Install Showcode Dependencies
+              run: (cd ./showcode && npm install)
 
-      - name: Generate Showcode
-        run: (cd ./showcode && npm run generate)
-        env:
-          IS_DESKTOP: true
+            - name: Generate Showcode
+              run: (cd ./showcode && npm run generate)
+              env:
+                  IS_DESKTOP: true
 
-      - name: Install App Dependencies
-        run: npm install
+            - name: Install App Dependencies
+              run: npm install
 
-      - name: Prepare for app notarization
-        if: startsWith(matrix.os, 'macos')
-        # Import Apple API key for app notarization on macOS
-        run: |
-          mkdir -p ~/private_keys/
-          echo '${{ secrets.API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.API_KEY_ID }}.p8
+            - name: Prepare for app notarization
+              if: startsWith(matrix.os, 'macos')
+              # Import Apple API key for app notarization on macOS
+              run: |
+                  mkdir -p ~/private_keys/
+                  echo '${{ secrets.API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.API_KEY_ID }}.p8
 
-      - name: Build & Publish Application
-        run: npx electron-builder --publish always
-        env:
-          RELEASE: true
-          NODE_ENV: production
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          API_KEY_ID: ${{ secrets.API_KEY_ID }}
-          API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
+            - name: Build & Publish Application
+              run: npx electron-builder --publish always
+              env:
+                  RELEASE: true
+                  NODE_ENV: production
+                  CSC_LINK: ${{ secrets.CSC_LINK }}
+                  CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  APPLE_ID: ${{ secrets.APPLE_ID }}
+                  APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+                  APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+                  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+                  API_KEY_ID: ${{ secrets.API_KEY_ID }}
+                  API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
