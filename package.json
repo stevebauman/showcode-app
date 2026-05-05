@@ -34,6 +34,11 @@
         "wait-on": "^9.0.5"
     },
     "build": {
+        "files": [
+            "main/**",
+            "package.json",
+            "showcode/.output/public/**"
+        ],
         "publish": {
             "provider": "github",
             "owner": "stevebauman",

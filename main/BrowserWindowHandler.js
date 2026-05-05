@@ -16,7 +16,7 @@ const devServerUrl = process.env.DEV_SERVER_URL;
 const SystemFonts = SystemFontsModule.default;
 const systemFonts = new SystemFonts();
 
-const loadURL = devServerUrl ? null : serve({directory: "showcode/dist"});
+const loadURL = devServerUrl ? null : serve({directory: "showcode/.output/public"});
 
 log.transports.file.level = "info";
 
