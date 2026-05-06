@@ -79,7 +79,7 @@ export default class BrowserWinHandler {
                 ...this.options.webPreferences,
                 disableBlinkFeatures: "Auxclick", // Disable auxclick event. See: https://developers.google.com/web/updates/2016/10/auxclick
                 webSecurity: !devServerUrl, // Disable on dev to allow loading local resources
-                preload: path.join(__dirname, "preload.mjs"),
+                preload: path.join(__dirname, "preload.cjs"),
             },
         });
 
