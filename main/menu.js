@@ -13,6 +13,36 @@ if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true;
 }
 
+let checkingForUpdates = false;
+
+autoUpdater.on("update-not-available", () => {
+    if (!checkingForUpdates) {
+        return;
+    }
+
+    checkingForUpdates = false;
+
+    dialog.showMessageBox({
+        message: "You are running the latest version.",
+    });
+});
+
+autoUpdater.on("update-available", () => {
+    if (!checkingForUpdates) {
+        return;
+    }
+
+    checkingForUpdates = false;
+
+    dialog.showMessageBox({
+        message: "A new update is available! Downloading now...",
+    });
+});
+
+autoUpdater.on("error", () => {
+    checkingForUpdates = false;
+});
+
 const template = [
     ...(__DARWIN__
         ? [
@@ -23,17 +53,11 @@ const template = [
                       {
                           label: "Check for updates...",
                           click: async () => {
-                              autoUpdater.once("update-not-available", () => {
-                                  dialog.showMessageBox({
-                                      message: "You are running the latest version.",
-                                  });
-                              });
+                              if (checkingForUpdates) {
+                                  return;
+                              }
 
-                              autoUpdater.once("update-available", () => {
-                                  dialog.showMessageBox({
-                                      message: "A new update is available! Downloading now...",
-                                  });
-                              });
+                              checkingForUpdates = true;
 
                               await autoUpdater.checkForUpdates();
                           },
