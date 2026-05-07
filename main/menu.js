@@ -19,7 +19,7 @@ const template = [
               {
                   label: app.name,
                   submenu: [
-                      {role: "about"},
+                      {role: "about", label: "About Showcode"},
                       {
                           label: "Check for updates...",
                           click: async () => {
@@ -45,7 +45,7 @@ const template = [
                       {role: "hideOthers"},
                       {role: "unhide"},
                       {type: "separator"},
-                      {role: "quit"},
+                      {role: "quit", label: "Quit Showcode"},
                   ],
               },
           ]
@@ -107,7 +107,7 @@ const template = [
             {
                 label: "GitHub Issues",
                 click: async () => {
-                    await shell.openExternal("https://github.com/stevebauman/showcode/issues");
+                    await shell.openExternal("https://github.com/stevebauman/showcode-app/issues");
                 },
             },
             {
@@ -121,7 +121,7 @@ const template = [
                 label: "Download Latest Version",
                 click: async () => {
                     await shell.openExternal(
-                        "https://github.com/stevebauman/showcode/releases/latest",
+                        "https://github.com/stevebauman/showcode-app/releases/latest",
                     );
                 },
             },
