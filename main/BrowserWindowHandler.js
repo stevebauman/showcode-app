@@ -91,6 +91,13 @@ export default class BrowserWinHandler {
             quitting = true;
         });
 
+        // Emitted by Electron when autoUpdater.quitAndInstall() is called.
+        // Without this, the macOS close handler below would intercept the
+        // updater's window close, hide the app, and prevent the relaunch.
+        app.on("before-quit-for-update", () => {
+            quitting = true;
+        });
+
         ipcMain.on("will-quit", (event) => {
             quitting = true;
             event.returnValue = true;
