@@ -39,6 +39,21 @@ autoUpdater.on("update-available", () => {
     });
 });
 
+autoUpdater.on("update-downloaded", () => {
+    dialog
+        .showMessageBox({
+            type: "info",
+            buttons: ["Restart", "Later"],
+            defaultId: 0,
+            message: "Update ready to install. Restart now to finish updating?",
+        })
+        .then(({response}) => {
+            if (response === 0) {
+                autoUpdater.quitAndInstall();
+            }
+        });
+});
+
 autoUpdater.on("error", () => {
     checkingForUpdates = false;
 });
