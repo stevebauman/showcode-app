@@ -2,6 +2,7 @@ import electronUpdater from "electron-updater";
 import {app, dialog, shell, Menu} from "electron";
 import log from "electron-log";
 import {__DARWIN__} from "./platform.js";
+import winHandler from "./mainWindow.js";
 
 const {autoUpdater} = electronUpdater;
 
@@ -39,7 +40,13 @@ autoUpdater.on("update-available", () => {
     });
 });
 
+autoUpdater.on("download-progress", ({percent}) => {
+    winHandler.browserWindow?.setProgressBar(percent / 100);
+});
+
 autoUpdater.on("update-downloaded", () => {
+    winHandler.browserWindow?.setProgressBar(-1);
+
     dialog
         .showMessageBox({
             type: "info",
@@ -55,6 +62,8 @@ autoUpdater.on("update-downloaded", () => {
 });
 
 autoUpdater.on("error", () => {
+    winHandler.browserWindow?.setProgressBar(-1);
+
     checkingForUpdates = false;
 });
 
