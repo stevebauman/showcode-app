@@ -56,6 +56,9 @@ autoUpdater.on("update-downloaded", () => {
         })
         .then(({response}) => {
             if (response === 0) {
+                // Bypass the macOS close interceptor in BrowserWindowHandler so
+                // that Squirrel can actually close the window and relaunch.
+                winHandler.quitting = true;
                 autoUpdater.quitAndInstall();
             }
         });

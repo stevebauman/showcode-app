@@ -30,6 +30,7 @@ export default class BrowserWinHandler {
         this.allowRecreate = allowRecreate;
         this.browserWindow = null;
         this.options = options;
+        this.quitting = false;
 
         this.createInstance();
     }
@@ -85,21 +86,12 @@ export default class BrowserWinHandler {
 
         mainWindowState.manage(this.browserWindow);
 
-        let quitting = false;
-
         app.on("before-quit", () => {
-            quitting = true;
-        });
-
-        // Emitted by Electron when autoUpdater.quitAndInstall() is called.
-        // Without this, the macOS close handler below would intercept the
-        // updater's window close, hide the app, and prevent the relaunch.
-        app.on("before-quit-for-update", () => {
-            quitting = true;
+            this.quitting = true;
         });
 
         ipcMain.on("will-quit", (event) => {
-            quitting = true;
+            this.quitting = true;
             event.returnValue = true;
         });
 
@@ -126,7 +118,7 @@ export default class BrowserWinHandler {
             // On macOS, when the user closes the window we really
             // just hide it. This lets us activate quickly and
             // keep all our interesting logic in the renderer.
-            if (__DARWIN__ && !quitting) {
+            if (__DARWIN__ && !this.quitting) {
                 e.preventDefault();
 
                 if (this.browserWindow.isFullScreen()) {
