@@ -5,7 +5,11 @@ import WindowStateHandler from "./WindowStateHandler.js";
 const options = {show: false};
 
 if (__DARWIN__) {
-    options.titleBarStyle = "hidden";
+    options.titleBarStyle = "hiddenInset";
+    options.trafficLightPosition = {x: 12, y: 8};
+    options.vibrancy = "sidebar";
+    options.visualEffectState = "active";
+    options.backgroundColor = "#00000000";
 } else if (__WINDOWS__) {
     options.frame = false;
 }
