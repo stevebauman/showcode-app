@@ -46,6 +46,7 @@ jobs:
               run: (cd ./showcode && npm run generate)
               env:
                   IS_DESKTOP: true
+                  NODE_OPTIONS: --max-old-space-size=4096
 
             - name: Install App Dependencies
               run: npm install
