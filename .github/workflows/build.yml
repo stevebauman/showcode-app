@@ -51,6 +51,29 @@ jobs:
             - name: Install App Dependencies
               run: npm install
 
+            - name: Import macOS signing certificate
+              if: startsWith(matrix.os, 'macos')
+              env:
+                  CSC_LINK: ${{ secrets.CSC_LINK }}
+                  CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+              run: |
+                  SIGNING_CERTIFICATE_PATH="$RUNNER_TEMP/showcode-signing.p12"
+                  SIGNING_KEYCHAIN_PATH="$RUNNER_TEMP/showcode-signing.keychain-db"
+                  SIGNING_KEYCHAIN_PASSWORD=$(openssl rand -hex 32)
+                  echo "::add-mask::$SIGNING_KEYCHAIN_PASSWORD"
+
+                  printf '%s' "$CSC_LINK" | base64 --decode > "$SIGNING_CERTIFICATE_PATH"
+
+                  security create-keychain -p "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN_PATH"
+                  security set-keychain-settings -lut 21600 "$SIGNING_KEYCHAIN_PATH"
+                  security unlock-keychain -p "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN_PATH"
+                  security import "$SIGNING_CERTIFICATE_PATH" -P "$CSC_KEY_PASSWORD" -T /usr/bin/codesign -T /usr/bin/productbuild -k "$SIGNING_KEYCHAIN_PATH"
+                  security set-key-partition-list -S apple-tool:,apple: -s -k "$SIGNING_KEYCHAIN_PASSWORD" "$SIGNING_KEYCHAIN_PATH"
+                  security list-keychains -d user -s "$SIGNING_KEYCHAIN_PATH" "$HOME/Library/Keychains/login.keychain-db"
+
+                  echo "CSC_KEYCHAIN=$SIGNING_KEYCHAIN_PATH" >> "$GITHUB_ENV"
+                  rm "$SIGNING_CERTIFICATE_PATH"
+
             - name: Prepare for app notarization
               if: startsWith(matrix.os, 'macos')
               # Import Apple API key for app notarization on macOS
@@ -59,7 +82,14 @@ jobs:
                   echo '${{ secrets.API_KEY }}' > ~/private_keys/AuthKey_${{ secrets.API_KEY_ID }}.p8
 
             - name: Build & Publish Application
-              run: npx electron-builder --publish always
+              shell: bash
+              run: |
+                  if [[ "$RUNNER_OS" == "macOS" ]]; then
+                      unset CSC_LINK
+                      npx electron-builder --publish always --config.forceCodeSigning=true
+                  else
+                      npx electron-builder --publish always
+                  fi
               env:
                   RELEASE: true
                   NODE_ENV: production
