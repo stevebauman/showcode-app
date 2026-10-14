@@ -51,6 +51,9 @@ jobs:
             - name: Install App Dependencies
               run: npm install
 
+            - name: Test App
+              run: npm test
+
             - name: Import macOS signing certificate
               if: startsWith(matrix.os, 'macos')
               env:

@@ -1,74 +1,11 @@
-import electronUpdater from "electron-updater";
-import {app, dialog, shell, Menu} from "electron";
-import log from "electron-log";
+import {app, shell, Menu} from "electron";
 import {__DARWIN__} from "./platform.js";
-import winHandler from "./mainWindow.js";
+import {checkForUpdates} from "./updater.js";
 
-const {autoUpdater} = electronUpdater;
-
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = app.isPackaged ? "info" : "debug";
-autoUpdater.allowPrerelease = true;
-
-if (!app.isPackaged) {
-    autoUpdater.forceDevUpdateConfig = true;
-}
-
-let checkingForUpdates = false;
-
-autoUpdater.on("update-not-available", () => {
-    if (!checkingForUpdates) {
-        return;
-    }
-
-    checkingForUpdates = false;
-
-    dialog.showMessageBox({
-        message: "You are running the latest version.",
-    });
-});
-
-autoUpdater.on("update-available", () => {
-    if (!checkingForUpdates) {
-        return;
-    }
-
-    checkingForUpdates = false;
-
-    dialog.showMessageBox({
-        message: "A new update is available! Downloading now...",
-    });
-});
-
-autoUpdater.on("download-progress", ({percent}) => {
-    winHandler.browserWindow?.setProgressBar(percent / 100);
-});
-
-autoUpdater.on("update-downloaded", () => {
-    winHandler.browserWindow?.setProgressBar(-1);
-
-    dialog
-        .showMessageBox({
-            type: "info",
-            buttons: ["Restart", "Later"],
-            defaultId: 0,
-            message: "Update ready to install. Restart now to finish updating?",
-        })
-        .then(({response}) => {
-            if (response === 0) {
-                // Bypass the macOS close interceptor in BrowserWindowHandler so
-                // that Squirrel can actually close the window and relaunch.
-                winHandler.quitting = true;
-                autoUpdater.quitAndInstall();
-            }
-        });
-});
-
-autoUpdater.on("error", () => {
-    winHandler.browserWindow?.setProgressBar(-1);
-
-    checkingForUpdates = false;
-});
+const updateMenuItem = {
+    label: "Check for updates...",
+    click: () => checkForUpdates({notifyIfCurrent: true}),
+};
 
 const template = [
     ...(__DARWIN__
@@ -77,18 +14,7 @@ const template = [
                   label: app.name,
                   submenu: [
                       {role: "about", label: "About Showcode"},
-                      {
-                          label: "Check for updates...",
-                          click: async () => {
-                              if (checkingForUpdates) {
-                                  return;
-                              }
-
-                              checkingForUpdates = true;
-
-                              await autoUpdater.checkForUpdates();
-                          },
-                      },
+                      updateMenuItem,
                       {type: "separator"},
                       {role: "services"},
                       {type: "separator"},
@@ -155,6 +81,7 @@ const template = [
     {
         role: "help",
         submenu: [
+            ...(__DARWIN__ ? [] : [updateMenuItem, {type: "separator"}]),
             {
                 label: "GitHub Issues",
                 click: async () => {

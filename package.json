@@ -1,6 +1,6 @@
 {
     "name": "showcode-app",
-    "version": "2.0.19",
+    "version": "2.0.20",
     "description": "Create beautiful code screenshots.",
     "keywords": [],
     "homepage": "https://github.com/stevebauman/showcode-app",
@@ -14,7 +14,8 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "generate": "cd showcode && cross-env IS_DESKTOP=true npm run generate",
-        "start": "electron ."
+        "start": "electron .",
+        "test": "node --experimental-test-module-mocks --test tests/*.test.js"
     },
     "dependencies": {
         "electron-log": "^5.4.3",
