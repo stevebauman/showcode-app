@@ -26,7 +26,6 @@ Pre-built binaries are available on the [releases page](https://github.com/steve
 ```
 showcode-app/
 ├── main/           Electron main process (window management, IPC, protocol handling)
-├── scripts/        Build & release scripts (notarization, etc.)
 ├── build/          Icons and platform-specific build assets
 ├── extraResources/ Additional resources bundled with the app
 └── showcode/       Git submodule containing the Nuxt application (the renderer)
@@ -82,11 +81,11 @@ Output is written to `dist/`.
 
 ### Code Signing & Notarization (macOS)
 
-Production macOS builds are notarized with Apple. To build and notarize locally, copy `electron-builder.env-example` to `electron-builder.env` and populate the values:
+Electron-builder signs and notarizes production macOS builds with Apple. To build and notarize locally, copy `electron-builder.env-example` to `electron-builder.env` and populate the following values.
 
 ```env
 APPLE_ID=your-apple-id@example.com
-APPLE_ID_PASSWORD=your-app-specific-password
+APPLE_APP_SPECIFIC_PASSWORD=your-app-specific-password
 APPLE_TEAM_ID=YOURTEAMID
 CSC_LINK=./certificate.p12
 CSC_KEY_PASSWORD=your-cert-password
@@ -100,16 +99,15 @@ Notarization requires a valid Apple Developer account and an app-specific passwo
 
 The [`build.yml`](.github/workflows/build.yml) workflow produces signed builds for macOS, Windows, and Linux on demand via `workflow_dispatch`. It expects the following repository secrets to be set:
 
-| Secret              | Purpose                                    |
-| ------------------- | ------------------------------------------ |
-| `APPLE_ID`          | Apple ID email                             |
-| `APPLE_ID_PASSWORD` | App-specific password                      |
-| `APPLE_TEAM_ID`     | Apple Developer Team ID                    |
-| `CSC_LINK`          | Base64-encoded `.p12` certificate          |
-| `CSC_KEY_PASSWORD`  | Certificate password                       |
-| `API_KEY`           | App Store Connect API key (`.p8` contents) |
-| `API_KEY_ID`        | Key ID for the above                       |
-| `API_KEY_ISSUER_ID` | Issuer ID for the above                    |
+| Secret              | Purpose                           |
+| ------------------- | --------------------------------- |
+| `APPLE_ID`          | Apple ID email                    |
+| `APPLE_ID_PASSWORD` | App-specific password             |
+| `APPLE_TEAM_ID`     | Apple Developer Team ID           |
+| `CSC_LINK`          | Base64-encoded `.p12` certificate |
+| `CSC_KEY_PASSWORD`  | Certificate password              |
+
+The workflow passes the `APPLE_ID_PASSWORD` secret to electron-builder as `APPLE_APP_SPECIFIC_PASSWORD`.
 
 ## Contributing
 
