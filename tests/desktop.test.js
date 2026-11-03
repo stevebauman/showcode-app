@@ -182,6 +182,7 @@ test("navigation retains internal routes and opens external pages outside the ap
     webContents.setWindowOpenHandler = mock.fn();
     const browserWindow = new EventEmitter();
     browserWindow.webContents = webContents;
+    browserWindow.setTitleBarOverlay = mock.fn();
     integrateWindow(browserWindow);
 
     const internal = {preventDefault: mock.fn()};
