@@ -11,11 +11,20 @@ autoUpdater.quitAndInstall = mock.fn();
 const dialog = {showMessageBox: mock.fn()};
 const log = {error: mock.fn(), transports: {file: {}}};
 const winHandler = {browserWindow: {setProgressBar: mock.fn()}, quitting: false};
+const handlers = new Map();
 
-mock.module("electron", {namedExports: {app, dialog, powerMonitor}});
+mock.module("electron", {
+    namedExports: {
+        app,
+        dialog,
+        powerMonitor,
+        ipcMain: {handle: (channel, handler) => handlers.set(channel, handler)},
+    },
+});
 mock.module("electron-updater", {defaultExport: {autoUpdater}});
 mock.module("electron-log", {defaultExport: log});
 mock.module("../main/mainWindow.js", {defaultExport: winHandler});
+mock.module("../main/BrowserEventHandler.js", {defaultExport: {send: mock.fn()}});
 
 beforeEach(() => {
     app.removeAllListeners();
@@ -167,7 +176,9 @@ test("downloaded updates prompt once and only restart when requested", async (t)
     const {checkForUpdates} = await import("../main/updater.js?install");
     autoUpdater.emit("download-progress", {percent: 50});
     assert.deepEqual(winHandler.browserWindow.setProgressBar.mock.calls[0].arguments, [0.5]);
+    assert.deepEqual(handlers.get("get-update-state")(), {status: "downloading", percent: 50});
     autoUpdater.emit("update-downloaded");
+    assert.deepEqual(handlers.get("get-update-state")(), {status: "downloaded"});
     await new Promise(setImmediate);
     assert.equal(dialog.showMessageBox.mock.callCount(), 1);
     assert.equal(autoUpdater.quitAndInstall.mock.callCount(), 0);
@@ -179,6 +190,20 @@ test("downloaded updates prompt once and only restart when requested", async (t)
 
     dialog.showMessageBox.mock.mockImplementation(async () => ({response: 0}));
     await checkForUpdates({notifyIfCurrent: true});
+    assert.equal(winHandler.quitting, true);
+    assert.equal(autoUpdater.quitAndInstall.mock.callCount(), 1);
+});
+
+test("the toolbar can install a downloaded update", async (t) => {
+    t.mock.timers.enable({apis: ["setTimeout"]});
+    await import("../main/updater.js?toolbar-install");
+
+    assert.equal(handlers.get("get-update-state")(), null);
+
+    autoUpdater.emit("update-downloaded");
+    await new Promise(setImmediate);
+    await handlers.get("install-update")();
+
     assert.equal(winHandler.quitting, true);
     assert.equal(autoUpdater.quitAndInstall.mock.callCount(), 1);
 });

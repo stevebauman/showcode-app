@@ -1,7 +1,8 @@
 import electronUpdater from "electron-updater";
-import {app, dialog, powerMonitor} from "electron";
+import {app, dialog, ipcMain, powerMonitor} from "electron";
 import log from "electron-log";
 import winHandler from "./mainWindow.js";
+import BrowserEventHandler from "./BrowserEventHandler.js";
 
 const {autoUpdater} = electronUpdater;
 const startupDelay = 10 * 1000;
@@ -11,6 +12,7 @@ let timer;
 let checkingForUpdates = false;
 let userInitiatedCheck = false;
 let updateReady = false;
+let updateState = null;
 
 autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = app.isPackaged ? "info" : "debug";
@@ -21,6 +23,28 @@ autoUpdater.autoInstallOnAppQuit = true;
 if (!app.isPackaged) {
     autoUpdater.forceDevUpdateConfig = true;
 }
+
+function setUpdateState(state) {
+    updateState = state;
+
+    if (winHandler.browserWindow) {
+        BrowserEventHandler.send(winHandler.browserWindow, "update-state-changed", state);
+    }
+}
+
+function installUpdate() {
+    winHandler.quitting = true;
+    autoUpdater.quitAndInstall();
+}
+
+ipcMain.handle("get-update-state", () => updateState);
+ipcMain.handle("install-update", async () => {
+    if (updateReady) {
+        installUpdate();
+    } else {
+        await checkForUpdates({notifyIfCurrent: true});
+    }
+});
 
 async function promptToInstall() {
     const {response} = await dialog.showMessageBox({
@@ -33,8 +57,7 @@ async function promptToInstall() {
 
     if (response === 0) {
         // Allow the updater to close the window instead of hiding it on macOS.
-        winHandler.quitting = true;
-        autoUpdater.quitAndInstall();
+        installUpdate();
     }
 }
 
@@ -72,12 +95,16 @@ export async function checkForUpdates({notifyIfCurrent = false} = {}) {
 }
 
 autoUpdater.on("update-not-available", () => {
+    setUpdateState(null);
+
     if (userInitiatedCheck) {
         void dialog.showMessageBox({message: "You are running the latest version."});
     }
 });
 
-autoUpdater.on("update-available", () => {
+autoUpdater.on("update-available", (info) => {
+    setUpdateState({status: "downloading", version: info?.version, percent: 0});
+
     if (userInitiatedCheck) {
         void dialog.showMessageBox({message: "A new update is available! Downloading now..."});
     }
@@ -85,16 +112,19 @@ autoUpdater.on("update-available", () => {
 
 autoUpdater.on("download-progress", ({percent}) => {
     winHandler.browserWindow?.setProgressBar(percent / 100);
+    setUpdateState({status: "downloading", percent: Math.round(percent)});
 });
 
 autoUpdater.on("update-downloaded", () => {
     updateReady = true;
     winHandler.browserWindow?.setProgressBar(-1);
+    setUpdateState({status: "downloaded"});
     void promptToInstall();
 });
 
 autoUpdater.on("error", () => {
     winHandler.browserWindow?.setProgressBar(-1);
+    setUpdateState(null);
 });
 
 function scheduleCheck(delay) {
