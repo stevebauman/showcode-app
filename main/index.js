@@ -1,5 +1,5 @@
-import {app, globalShortcut} from "electron";
-import {__DARWIN__, __LINUX__, __WINDOWS__} from "./platform.js";
+import {app} from "electron";
+import {__DARWIN__} from "./platform.js";
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {
@@ -12,23 +12,6 @@ app.on("window-all-closed", function () {
     app.quit();
 });
 
-app.whenReady().then(() => {
-    if (!app.isEmojiPanelSupported()) {
-        return;
-    }
-
-    if (__DARWIN__) {
-        globalShortcut.register("Super+Shift+Space", () => app.showEmojiPanel());
-    }
-
-    if (__LINUX__) {
-        globalShortcut.register("Control+.", () => app.showEmojiPanel());
-    }
-
-    if (__WINDOWS__) {
-        globalShortcut.register("Super+.", () => app.showEmojiPanel());
-    }
-});
-
+import "./desktop.js";
 import "./menu.js";
 import "./mainWindow.js";

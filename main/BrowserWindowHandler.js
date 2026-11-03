@@ -8,6 +8,8 @@ import log from "electron-log";
 import SystemFontsModule from "system-font-families";
 import {__DARWIN__} from "./platform.js";
 import WindowStateHandler from "./WindowStateHandler.js";
+import integrateWindow, {doubleClickTitleBar} from "./windowIntegrations.js";
+import {windowForEvent} from "./desktop.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +34,12 @@ export default class BrowserWinHandler {
         this.options = options;
         this.quitting = false;
 
+        this.bindIpc();
         this.createInstance();
+
+        app.on("before-quit", () => {
+            this.quitting = true;
+        });
     }
 
     createInstance() {
@@ -81,38 +88,16 @@ export default class BrowserWinHandler {
                 disableBlinkFeatures: "Auxclick", // Disable auxclick event. See: https://developers.google.com/web/updates/2016/10/auxclick
                 webSecurity: !devServerUrl, // Disable on dev to allow loading local resources
                 preload: path.join(__dirname, "preload.cjs"),
+                contextIsolation: true,
+                nodeIntegration: false,
+                sandbox: true,
+                spellcheck: false,
             },
         });
 
         mainWindowState.manage(this.browserWindow);
-
-        app.on("before-quit", () => {
-            this.quitting = true;
-        });
-
-        ipcMain.on("will-quit", (event) => {
-            this.quitting = true;
-            event.returnValue = true;
-        });
-
-        ipcMain.on("close", () => this.browserWindow.close());
-        ipcMain.on("maximize", () => this.browserWindow.maximize());
-        ipcMain.on("minimize", () => this.browserWindow.minimize());
-        ipcMain.on("unmaximize", () => this.browserWindow.unmaximize());
-
-        ipcMain.on("double-click-title-bar", () => {
-            this.browserWindow.isMaximized()
-                ? this.browserWindow.unmaximize()
-                : this.browserWindow.maximize();
-        });
-
-        ipcMain.handle("get-window-state", async () => {
-            return new WindowStateHandler(this.browserWindow).get();
-        });
-
-        ipcMain.handle("get-system-fonts", async () => {
-            return await systemFonts.getFonts();
-        });
+        integrateWindow(this.browserWindow);
+        new WindowStateHandler(this.browserWindow).bind();
 
         this.browserWindow.on("close", (e) => {
             // On macOS, when the user closes the window we really
@@ -123,9 +108,9 @@ export default class BrowserWinHandler {
 
                 if (this.browserWindow.isFullScreen()) {
                     this.browserWindow.setFullScreen(false);
-                    this.browserWindow.once("leave-full-screen", () => app.hide());
+                    this.browserWindow.once("leave-full-screen", () => this.browserWindow.hide());
                 } else {
-                    app.hide();
+                    this.browserWindow.hide();
                 }
 
                 return;
@@ -143,7 +128,28 @@ export default class BrowserWinHandler {
     recreate() {
         if (this.browserWindow === null) {
             this.create();
+        } else {
+            this.browserWindow.show();
+            this.browserWindow.focus();
         }
+    }
+
+    bindIpc() {
+        for (const action of ["close", "maximize", "minimize", "unmaximize"]) {
+            ipcMain.on(action, (event) => windowForEvent(event)[action]());
+        }
+
+        ipcMain.on("double-click-title-bar", (event) => doubleClickTitleBar(windowForEvent(event)));
+
+        ipcMain.handle("get-window-state", (event) => {
+            return new WindowStateHandler(windowForEvent(event)).get();
+        });
+
+        ipcMain.handle("get-system-fonts", (event) => {
+            windowForEvent(event);
+
+            return systemFonts.getFonts();
+        });
     }
 
     /**
