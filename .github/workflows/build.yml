@@ -1,50 +1,154 @@
-name: build
+name: Build desktop release
 
-on: workflow_dispatch
+on:
+    workflow_dispatch:
+        inputs:
+            renderer_ref:
+                description: "Approved Showcode commit SHA (blank uses master)"
+                required: false
+                default: ""
+
+permissions:
+    contents: read
+
+concurrency:
+    group: desktop-release
+    cancel-in-progress: false
 
 jobs:
-    release:
+    prepare:
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.prepare.outputs.version }}
+            commit: ${{ steps.commit.outputs.sha }}
+        steps:
+            - uses: actions/create-github-app-token@v2
+              id: app
+              with:
+                  app-id: ${{ vars.RELEASE_APP_ID }}
+                  private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+                  owner: ${{ github.repository_owner }}
+                  repositories: showcode-app
+                  permission-contents: write
+            - uses: actions/checkout@v5
+              with:
+                  ref: master
+                  submodules: recursive
+                  fetch-depth: 0
+                  token: ${{ steps.app.outputs.token }}
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+                  cache: npm
+                  cache-dependency-path: |
+                      package-lock.json
+                      showcode/package-lock.json
+            - name: Pin the approved renderer
+              env:
+                  RENDERER_REF: ${{ inputs.renderer_ref }}
+              run: |
+                  mkdir -p .release
+                  git rev-parse HEAD:showcode > .release/previous-ref
+                  git -C showcode fetch origin master
+                  if [ -z "$RENDERER_REF" ]; then
+                    RENDERER_REF=$(git -C showcode rev-parse origin/master)
+                  fi
+                  [[ "$RENDERER_REF" =~ ^[0-9a-f]{40}$ ]] || { echo 'Use a full Showcode commit SHA.'; exit 1; }
+                  git -C showcode merge-base --is-ancestor "$RENDERER_REF" origin/master
+                  git -C showcode checkout --detach "$RENDERER_REF"
+                  printf '%s' "$RENDERER_REF" > .release/renderer-ref
+            - name: Read approved release notes
+              run: |
+                  npm ci --prefix showcode
+                  node showcode/scripts/releases/catalog.mjs json > .release/metadata.json
+            - name: Update desktop version
+              id: prepare
+              run: node scripts/releases/prepare.mjs "$(cat .release/previous-ref)" "$(cat .release/renderer-ref)"
+            - name: Refuse to rebuild a published release
+              uses: actions/github-script@v7
+              env:
+                  RELEASE_VERSION: ${{ steps.prepare.outputs.version }}
+              with:
+                  script: |
+                      try {
+                        const {data} = await github.rest.repos.getReleaseByTag({
+                          ...context.repo, tag: `v${process.env.RELEASE_VERSION}`,
+                        });
+                        if (!data.draft) throw new Error('This version is already published. Prepare a new version.');
+                      } catch (error) {
+                        if (error.status !== 404) throw error;
+                      }
+            - name: Record the desktop release commit and tag
+              id: commit
+              env:
+                  RELEASE_VERSION: ${{ steps.prepare.outputs.version }}
+              run: |
+                  git config user.name 'Showcode Release Bot'
+                  git config user.email 'release-bot@users.noreply.github.com'
+                  git add package.json package-lock.json showcode
+                  if ! git diff --cached --quiet; then
+                    git commit -m "Release Showcode $RELEASE_VERSION"
+                  fi
+                  RELEASE_COMMIT=$(git rev-parse HEAD)
+                  RELEASE_TAG="v$RELEASE_VERSION"
+                  if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
+                    test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$RELEASE_COMMIT"
+                  else
+                    git tag "$RELEASE_TAG" "$RELEASE_COMMIT"
+                  fi
+                  git push --atomic origin HEAD:master "refs/tags/$RELEASE_TAG"
+                  echo "sha=$RELEASE_COMMIT" >> "$GITHUB_OUTPUT"
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: release-notes
+                  path: |
+                      .release/metadata.json
+                      .release/notes.md
+                  include-hidden-files: true
+
+    build:
+        needs: prepare
         runs-on: ${{ matrix.os }}
-
-        permissions:
-            contents: write
-
         strategy:
             fail-fast: false
             matrix:
                 os: [macos-latest, ubuntu-latest, windows-latest]
-
         steps:
-            - name: Check out Git repository
-              uses: actions/checkout@v5
+            - uses: actions/checkout@v5
               with:
+                  ref: ${{ needs.prepare.outputs.commit }}
                   submodules: recursive
-
-            - name: Setup Node
-              uses: actions/setup-node@v5
+            - uses: actions/setup-node@v5
               with:
                   node-version: 22
-
-            - uses: actions/cache@v5
+                  cache: npm
+                  cache-dependency-path: |
+                      package-lock.json
+                      showcode/package-lock.json
+            - uses: actions/download-artifact@v4
               with:
-                  path: "**/node_modules"
-                  key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
-
-            - name: Install Showcode Dependencies
-              run: (cd ./showcode && npm install)
-
-            - name: Generate Showcode
-              run: (cd ./showcode && npm run generate)
+                  name: release-notes
+                  path: .release
+            - name: Install dependencies
+              shell: bash
+              run: |
+                  npm ci --prefix showcode
+                  npm ci
+            - name: Test renderer
+              if: runner.os == 'Linux'
+              working-directory: showcode
+              run: |
+                  npx nuxi prepare
+                  npm run test:releases
+                  npx vitest run
+            - name: Generate renderer
+              working-directory: showcode
+              run: npm run generate
               env:
                   IS_DESKTOP: true
                   NODE_OPTIONS: --max-old-space-size=4096
-
-            - name: Install App Dependencies
-              run: npm install
-
-            - name: Test App
+            - name: Test desktop app
               run: npm test
-
             - name: Import macOS signing certificate
               if: startsWith(matrix.os, 'macos')
               env:
@@ -68,21 +172,92 @@ jobs:
                   echo "CSC_KEYCHAIN=$SIGNING_KEYCHAIN_PATH" >> "$GITHUB_ENV"
                   rm "$SIGNING_CERTIFICATE_PATH"
 
-            - name: Build & Publish Application
+            - name: Package application without publishing
               shell: bash
               run: |
                   if [[ "$RUNNER_OS" == "macOS" ]]; then
-                      unset CSC_LINK
-                      npx electron-builder --publish always --config.forceCodeSigning=true
+                    unset CSC_LINK
+                    npx electron-builder --publish never --config.forceCodeSigning=true -c.releaseInfo.releaseNotesFile=.release/notes.md
                   else
-                      npx electron-builder --publish always
+                    npx electron-builder --publish never -c.releaseInfo.releaseNotesFile=.release/notes.md
                   fi
               env:
                   RELEASE: true
                   NODE_ENV: production
                   CSC_LINK: ${{ secrets.CSC_LINK }}
                   CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   APPLE_ID: ${{ secrets.APPLE_ID }}
                   APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
                   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: installers-${{ runner.os }}
+                  if-no-files-found: error
+                  compression-level: 0
+                  path: |
+                      dist/*.dmg
+                      dist/*.zip
+                      dist/*.exe
+                      dist/*.AppImage
+                      dist/*.blockmap
+                      dist/latest*.yml
+
+    draft:
+        needs: [prepare, build]
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  ref: ${{ needs.prepare.outputs.commit }}
+            - uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+                  cache: npm
+            - run: npm ci --ignore-scripts
+            - uses: actions/download-artifact@v4
+              with:
+                  pattern: installers-*
+                  path: dist
+                  merge-multiple: true
+            - uses: actions/download-artifact@v4
+              with:
+                  name: release-notes
+                  path: .release
+            - name: Verify all installers and updater manifests
+              env:
+                  RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+              run: node scripts/releases/artifacts.mjs dist "$RELEASE_VERSION"
+            - name: Create or update the draft release
+              uses: actions/github-script@v7
+              env:
+                  RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+                  RELEASE_COMMIT: ${{ needs.prepare.outputs.commit }}
+              with:
+                  script: |
+                      const fs = require('node:fs');
+                      const notes = fs.readFileSync('.release/notes.md', 'utf8');
+                      const tag = `v${process.env.RELEASE_VERSION}`;
+                      let release;
+                      try {
+                        release = (await github.rest.repos.getReleaseByTag({...context.repo, tag})).data;
+                      } catch (error) {
+                        if (error.status !== 404) throw error;
+                      }
+                      if (release && !release.draft) throw new Error('Refusing to modify a published release.');
+                      const options = {
+                        ...context.repo, name: `Showcode ${process.env.RELEASE_VERSION}`,
+                        body: notes, draft: true, prerelease: false,
+                      };
+                      if (release) await github.rest.repos.updateRelease({...options, release_id: release.id});
+                      else await github.rest.repos.createRelease({
+                        ...options, tag_name: tag, target_commitish: process.env.RELEASE_COMMIT,
+                      });
+            - name: Upload verified assets
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+              run: |
+                  gh release upload "v$RELEASE_VERSION" dist/* --clobber
+                  printf '## Showcode %s is ready for review\n\nAll platform builds and updater manifests passed. Download an installer from the draft release, test it, then click **Publish release**. No rebuild is required.\n' "$RELEASE_VERSION" >> "$GITHUB_STEP_SUMMARY"

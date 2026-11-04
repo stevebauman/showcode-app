@@ -4,6 +4,7 @@ import {beforeEach, mock, test} from "node:test";
 
 const app = new EventEmitter();
 app.whenReady = async () => {};
+app.getVersion = () => "3.0.0";
 const powerMonitor = new EventEmitter();
 const autoUpdater = new EventEmitter();
 autoUpdater.checkForUpdates = mock.fn();
@@ -31,6 +32,7 @@ beforeEach(() => {
     powerMonitor.removeAllListeners();
     autoUpdater.removeAllListeners();
     app.isPackaged = true;
+    app.getVersion = () => "3.0.0";
     winHandler.quitting = false;
     autoUpdater.checkForUpdates.mock.resetCalls();
     autoUpdater.checkForUpdates.mock.mockImplementation(async () => {
@@ -42,6 +44,17 @@ beforeEach(() => {
     dialog.showMessageBox.mock.mockImplementation(async () => ({response: 1}));
     log.error.mock.resetCalls();
     winHandler.browserWindow.setProgressBar.mock.resetCalls();
+});
+
+test("local preview builds never check for or install production updates", async (t) => {
+    t.mock.timers.enable({apis: ["setTimeout"]});
+    app.getVersion = () => "3.0.1-local.0";
+    const {checkForUpdates} = await import("../main/updater.js?local-preview");
+    t.mock.timers.tick(10 * 60 * 1000);
+    await new Promise(setImmediate);
+    await checkForUpdates({notifyIfCurrent: true});
+    assert.equal(autoUpdater.checkForUpdates.mock.callCount(), 0);
+    assert.equal(autoUpdater.quitAndInstall.mock.callCount(), 0);
 });
 
 test("packaged apps check after startup and every ten minutes without current-version dialogs", async (t) => {

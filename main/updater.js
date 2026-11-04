@@ -62,6 +62,8 @@ async function promptToInstall() {
 }
 
 export async function checkForUpdates({notifyIfCurrent = false} = {}) {
+    if (app.getVersion().includes("-local.")) return;
+
     if (updateReady) {
         if (notifyIfCurrent) await promptToInstall();
         return;
@@ -141,7 +143,7 @@ function resumeChecks() {
 }
 
 app.whenReady().then(() => {
-    if (!app.isPackaged) return;
+    if (!app.isPackaged || app.getVersion().includes("-local.")) return;
 
     scheduleCheck(startupDelay);
     powerMonitor.on("resume", resumeChecks);
