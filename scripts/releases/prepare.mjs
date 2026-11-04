@@ -12,8 +12,19 @@ export async function prepareDesktopRelease(root, previousRef, rendererRef) {
     const compare = release.version.localeCompare(pkg.version, "en", {numeric: true});
     if (compare < 0 || (compare === 0 && previousRef !== rendererRef)) {
         throw new Error(
-            "New renderer changes require a new release version. Prepare a release in Showcode first.",
+            "New renderer changes require a new release version. Publish a new release in Showcode first.",
         );
+    }
+    const snapshotPath = path.join(root, "releases", `${release.version}.json`);
+    const snapshot = {...release, rendererRef};
+    if (compare === 0) {
+        const existing = JSON.parse(await readFile(snapshotPath, "utf8"));
+        if (JSON.stringify(existing) !== JSON.stringify(snapshot)) {
+            throw new Error("A retry must use the original release notes and renderer commit.");
+        }
+    } else {
+        await mkdir(path.dirname(snapshotPath), {recursive: true});
+        await writeFile(snapshotPath, `${JSON.stringify(snapshot, null, 4)}\n`, {flag: "wx"});
     }
     for (const filename of ["package.json", "package-lock.json"]) {
         const file = path.join(root, filename);

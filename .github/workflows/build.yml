@@ -3,10 +3,9 @@ name: Build desktop release
 on:
     workflow_dispatch:
         inputs:
-            renderer_ref:
-                description: "Approved Showcode commit SHA (blank uses master)"
-                required: false
-                default: ""
+            release_id:
+                description: "Published release ID from stevebauman/showcode"
+                required: true
 
 permissions:
     contents: read
@@ -43,24 +42,27 @@ jobs:
                   cache-dependency-path: |
                       package-lock.json
                       showcode/package-lock.json
-            - name: Pin the approved renderer
+            - name: Read the published Showcode release
+              id: source
               env:
-                  RENDERER_REF: ${{ inputs.renderer_ref }}
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_ID: ${{ inputs.release_id }}
+                  OWNER: ${{ github.repository_owner }}
               run: |
+                  [[ "$RELEASE_ID" =~ ^[0-9]+$ ]] || { echo 'Use a numeric release ID.'; exit 1; }
                   mkdir -p .release
+                  gh api "repos/$OWNER/showcode/releases/$RELEASE_ID" > .release/source.json
+                  node scripts/releases/source.mjs .release/source.json .release/metadata.json
+            - name: Pin the tagged renderer
+              env:
+                  SOURCE_TAG: ${{ steps.source.outputs.tag }}
+              run: |
                   git rev-parse HEAD:showcode > .release/previous-ref
-                  git -C showcode fetch origin master
-                  if [ -z "$RENDERER_REF" ]; then
-                    RENDERER_REF=$(git -C showcode rev-parse origin/master)
-                  fi
-                  [[ "$RENDERER_REF" =~ ^[0-9a-f]{40}$ ]] || { echo 'Use a full Showcode commit SHA.'; exit 1; }
+                  git -C showcode fetch origin master --tags
+                  RENDERER_REF=$(git -C showcode rev-parse "refs/tags/$SOURCE_TAG^{commit}")
                   git -C showcode merge-base --is-ancestor "$RENDERER_REF" origin/master
                   git -C showcode checkout --detach "$RENDERER_REF"
                   printf '%s' "$RENDERER_REF" > .release/renderer-ref
-            - name: Read approved release notes
-              run: |
-                  npm ci --prefix showcode
-                  node showcode/scripts/releases/catalog.mjs json > .release/metadata.json
             - name: Update desktop version
               id: prepare
               run: node scripts/releases/prepare.mjs "$(cat .release/previous-ref)" "$(cat .release/renderer-ref)"
@@ -85,18 +87,19 @@ jobs:
               run: |
                   git config user.name 'Showcode Release Bot'
                   git config user.email 'release-bot@users.noreply.github.com'
-                  git add package.json package-lock.json showcode
-                  if ! git diff --cached --quiet; then
-                    git commit -m "Release Showcode $RELEASE_VERSION"
-                  fi
-                  RELEASE_COMMIT=$(git rev-parse HEAD)
                   RELEASE_TAG="v$RELEASE_VERSION"
                   if git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"; then
-                    test "$(git rev-parse "$RELEASE_TAG^{commit}")" = "$RELEASE_COMMIT"
+                    git diff --exit-code "$RELEASE_TAG" -- package.json package-lock.json showcode "releases/$RELEASE_VERSION.json"
+                    RELEASE_COMMIT=$(git rev-parse "$RELEASE_TAG^{commit}")
                   else
+                    git add package.json package-lock.json showcode releases
+                    if ! git diff --cached --quiet; then
+                      git commit -m "Release Showcode $RELEASE_VERSION"
+                    fi
+                    RELEASE_COMMIT=$(git rev-parse HEAD)
                     git tag "$RELEASE_TAG" "$RELEASE_COMMIT"
+                    git push --atomic origin HEAD:master "refs/tags/$RELEASE_TAG"
                   fi
-                  git push --atomic origin HEAD:master "refs/tags/$RELEASE_TAG"
                   echo "sha=$RELEASE_COMMIT" >> "$GITHUB_OUTPUT"
             - uses: actions/upload-artifact@v4
               with:
@@ -134,6 +137,8 @@ jobs:
               run: |
                   npm ci --prefix showcode
                   npm ci
+            - name: Bundle the approved release notes
+              run: node showcode/scripts/releases/import.mjs .release/metadata.json
             - name: Test renderer
               if: runner.os == 'Linux'
               working-directory: showcode
@@ -202,7 +207,7 @@ jobs:
                       dist/*.blockmap
                       dist/latest*.yml
 
-    draft:
+    publish:
         needs: [prepare, build]
         runs-on: ubuntu-latest
         permissions:
@@ -260,4 +265,39 @@ jobs:
                   RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
               run: |
                   gh release upload "v$RELEASE_VERSION" dist/* --clobber
-                  printf '## Showcode %s is ready for review\n\nAll platform builds and updater manifests passed. Download an installer from the draft release, test it, then click **Publish release**. No rebuild is required.\n' "$RELEASE_VERSION" >> "$GITHUB_STEP_SUMMARY"
+            - uses: actions/create-github-app-token@v2
+              id: web-app
+              with:
+                  app-id: ${{ vars.RELEASE_APP_ID }}
+                  private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+                  owner: ${{ github.repository_owner }}
+                  repositories: showcode
+                  permission-contents: write
+            - uses: actions/checkout@v5
+              with:
+                  repository: ${{ github.repository_owner }}/showcode
+                  ref: master
+                  path: .release/web-sync
+                  token: ${{ steps.web-app.outputs.token }}
+            - name: Sync the web changelog
+              env:
+                  RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+              run: |
+                  npm ci --prefix .release/web-sync
+                  node .release/web-sync/scripts/releases/import.mjs .release/metadata.json
+                  npm run release:check --prefix .release/web-sync
+                  cd .release/web-sync
+                  git config user.name 'Showcode Release Bot'
+                  git config user.email 'release-bot@users.noreply.github.com'
+                  git add app/content/releases package.json package-lock.json
+                  if ! git diff --cached --quiet; then
+                    git commit -m "Sync Showcode $RELEASE_VERSION release notes"
+                    git push origin HEAD:master
+                  fi
+            - name: Publish the verified desktop release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  RELEASE_VERSION: ${{ needs.prepare.outputs.version }}
+              run: |
+                  gh release edit "v$RELEASE_VERSION" --draft=false --latest
+                  printf '## Showcode %s published\n\nAll platform installers and updater manifests passed validation.\n' "$RELEASE_VERSION" >> "$GITHUB_STEP_SUMMARY"

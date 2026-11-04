@@ -38,6 +38,16 @@ test("desktop releases update both versions and reuse the approved notes", async
         /# Smoother editing\n\nSmall improvements\.\n\n\*\*Fixed\*\*/,
     );
     assert.equal(await prepareDesktopRelease(root, "approved", "approved"), "3.0.1");
+    const snapshot = JSON.parse(await readFile(path.join(root, "releases/3.0.1.json"), "utf8"));
+    assert.equal(snapshot.rendererRef, "approved");
+    await writeFile(
+        path.join(root, ".release/metadata.json"),
+        JSON.stringify({...snapshot, content: "Edited release notes"}),
+    );
+    await assert.rejects(
+        prepareDesktopRelease(root, "approved", "approved"),
+        /original release notes/,
+    );
     await assert.rejects(
         prepareDesktopRelease(root, "approved", "different"),
         /new release version/,
