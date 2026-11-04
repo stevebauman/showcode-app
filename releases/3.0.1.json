@@ -1,0 +1,12 @@
+{
+    "id": "github-release-434286495",
+    "version": "3.0.1",
+    "publishedAt": "2026-11-04",
+    "title": "v3.0.1",
+    "description": "Showcode 3.0.1 is now available.",
+    "announce": true,
+    "content": "## What's Changed\r\n* Refine popovers and preview selectors by @stevebauman in https://github.com/stevebauman/showcode/pull/259\r\n* Automate release preparation and centralize release notes by @stevebauman in https://github.com/stevebauman/showcode/pull/260\r\n\r\n\r\n**Full Changelog**: https://github.com/stevebauman/showcode/compare/v3.0.0...v3.0.1",
+    "tag": "v3.0.1",
+    "sourceUrl": "https://github.com/stevebauman/showcode/releases/tag/v3.0.1",
+    "rendererRef": "3a46e5eadabe661874ffa4557bb39573e5ba5501"
+}
