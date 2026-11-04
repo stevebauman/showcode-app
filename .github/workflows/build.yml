@@ -244,12 +244,10 @@ jobs:
                       const fs = require('node:fs');
                       const notes = fs.readFileSync('.release/notes.md', 'utf8');
                       const tag = `v${process.env.RELEASE_VERSION}`;
-                      let release;
-                      try {
-                        release = (await github.rest.repos.getReleaseByTag({...context.repo, tag})).data;
-                      } catch (error) {
-                        if (error.status !== 404) throw error;
-                      }
+                      const releases = await github.paginate(github.rest.repos.listReleases, {
+                        ...context.repo, per_page: 100,
+                      });
+                      const release = releases.find(release => release.tag_name === tag);
                       if (release && !release.draft) throw new Error('Refusing to modify a published release.');
                       const options = {
                         ...context.repo, name: `Showcode ${process.env.RELEASE_VERSION}`,
