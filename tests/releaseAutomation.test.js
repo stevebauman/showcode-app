@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import {test} from "node:test";
 import {stringify} from "yaml";
+import {Arch, getArtifactArchName} from "builder-util/out/arch.js";
 import {prepareDesktopRelease} from "../scripts/releases/prepare.mjs";
 import {validateArtifacts} from "../scripts/releases/artifacts.mjs";
 
@@ -73,7 +74,7 @@ test("release validation requires all platforms and verifies updater hashes befo
         "Showcode-3.0.1-mac-arm64.zip",
         "Showcode-3.0.1-mac-x64.zip",
         "Showcode-3.0.1-win-x64.exe",
-        "Showcode-3.0.1-linux-x64.AppImage",
+        `Showcode-3.0.1-linux-${getArtifactArchName(Arch.x64, "AppImage")}.AppImage`,
     ];
     for (const file of filenames) await writeFile(path.join(root, file), file);
     const entry = (file) => ({

@@ -19,7 +19,7 @@ export async function validateArtifacts(directory, version) {
         `Showcode-${version}-mac-arm64.zip`,
         `Showcode-${version}-mac-x64.zip`,
         `Showcode-${version}-win-x64.exe`,
-        `Showcode-${version}-linux-x64.AppImage`,
+        `Showcode-${version}-linux-x86_64.AppImage`,
         "latest.yml",
         "latest-mac.yml",
         "latest-linux.yml",
@@ -40,7 +40,7 @@ export async function validateArtifacts(directory, version) {
                 `Showcode-${version}-mac-arm64.zip`,
                 `Showcode-${version}-mac-x64.zip`,
             ],
-            "latest-linux.yml": [`Showcode-${version}-linux-x64.AppImage`],
+            "latest-linux.yml": [`Showcode-${version}-linux-x86_64.AppImage`],
         };
         for (const file of platformFiles[filename]) {
             if (!manifest.files.some((entry) => decodeURIComponent(entry.url) === file)) {
