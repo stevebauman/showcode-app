@@ -70,10 +70,12 @@ This concurrently runs the Nuxt dev server on `http://localhost:3000` and launch
 
 ## Building
 
+For the automated release flow and required GitHub configuration, see the [release guide](docs/releases.md). For a local preview in one command, run `npm run release:local`.
+
 To produce a distributable build for your current platform:
 
 ```bash
-npm run generate    # builds the Nuxt renderer into showcode/dist
+npm run generate    # builds the Nuxt renderer into showcode/.output/public
 npm run build       # packages the Electron app via electron-builder
 ```
 

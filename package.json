@@ -15,7 +15,8 @@
         "format:check": "prettier --check .",
         "generate": "cd showcode && cross-env IS_DESKTOP=true npm run generate",
         "start": "electron .",
-        "test": "node --experimental-test-module-mocks --test tests/*.test.js"
+        "test": "node --experimental-test-module-mocks --test tests/*.test.js",
+        "release:local": "node scripts/releases/local.mjs"
     },
     "dependencies": {
         "electron-log": "^5.4.3",
@@ -30,7 +31,8 @@
         "electron": "^41.2.1",
         "electron-builder": "^26.8.1",
         "prettier": "^3.8.3",
-        "wait-on": "^9.0.5"
+        "wait-on": "^9.0.5",
+        "yaml": "^2.8.3"
     },
     "build": {
         "files": [
@@ -41,7 +43,8 @@
         "publish": {
             "provider": "github",
             "owner": "stevebauman",
-            "repo": "showcode-app"
+            "repo": "showcode-app",
+            "releaseType": "draft"
         },
         "productName": "Showcode",
         "appId": "com.showcode.app",
