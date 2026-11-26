@@ -1,0 +1,12 @@
+{
+    "id": "github-release-459861518",
+    "version": "3.0.3",
+    "publishedAt": "2026-11-26",
+    "title": "Showcode 3.0.3",
+    "description": "Showcode 3.0.3 is now available.",
+    "announce": true,
+    "content": "## What's Changed\n* Fix Fit to Window sizing for scenes by @stevebauman in https://github.com/stevebauman/showcode/pull/262\n* Animate adding and removing code editors by @stevebauman in https://github.com/stevebauman/showcode/pull/261\n* Fix the changelog test when newer release notes are bundled by @stevebauman in https://github.com/stevebauman/showcode/pull/263\n\n\n**Full Changelog**: https://github.com/stevebauman/showcode/compare/v3.0.1...v3.0.3",
+    "tag": "v3.0.3",
+    "sourceUrl": "https://github.com/stevebauman/showcode/releases/tag/v3.0.3",
+    "rendererRef": "5ccb652776525c8aa055519b9d005d5748711bb5"
+}
