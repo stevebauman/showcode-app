@@ -208,8 +208,7 @@ const applicationCommands = [
     "close-project",
 ];
 
-ipcMain.on("set-menu-state", (event, state) => {
-    const window = windowForEvent(event);
+ipcMain.on("set-menu-state", (_event, state) => {
     const recent = template
         .find((item) => item.id === "file")
         .submenu.find((item) => item.id === "recent-projects");
@@ -237,10 +236,6 @@ ipcMain.on("set-menu-state", (event, state) => {
 
     menu.getMenuItemById("emoji").enabled = app.isEmojiPanelSupported();
     Menu.setApplicationMenu(menu);
-
-    if (__DARWIN__) {
-        window.setDocumentEdited(state.modified);
-    }
 });
 
 ipcMain.handle("show-file-menu", (event) => {
